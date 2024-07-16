@@ -1,26 +1,68 @@
 const User = require("../models/user");
+const {
+  hashPassword,
+  comparePassword,
+  checkUserExists,
+} = require("../middleware/auth");
 
-const createUser = async (req, res) => {
-  const { username, password_digest, email } = req.body;
+const register = async (req, res) => {
+  const { username, password, email } = req.body;
   try {
+    const userExists = await checkUserExists(email);
+    if (userExists) {
+      console.log("User already registered with this email.");
+      return res.status(400);
+    }
+
+    const password_digest = await hashPassword(password);
     const newUser = new User({
       username,
       password_digest,
       email,
     });
+
     await newUser.save();
-    console.log("new user created succasfuly with this details:", newUser);
+    console.log("New user created successfully with these details:", newUser);
     res.status(201);
   } catch (error) {
-    console.log("error in creating user!");
+    console.log("Error in creating user:", error.message);
     res.status(400);
   }
 };
-
-const updateUser = async (req, res) => {
-  const { email: userEmail } = req.body;
-  const { username, password_digest, email: newEmail } = req.body;
+const login = async (req, res) => {
+  const { email, password } = req.body;
   try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("Invalid email or password.");
+      return res.status(400);
+    }
+
+    const isMatch = await comparePassword(password, user.password_digest);
+    if (!isMatch) {
+      console.log("Invalid email or password.");
+      return res.status(400);
+    }
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.status(200);
+  } catch (error) {
+    console.error("Error logging in:", error.message);
+    res.status(400);
+  }
+};
+const edit = async (req, res) => {
+  const { email: userEmail } = req.body;
+  const { username, password, email: newEmail } = req.body;
+  try {
+    const password_digest = await hashPassword(password);
     const updatedUser = await User.findOneAndUpdate(
       { email: userEmail },
       {
@@ -61,24 +103,10 @@ const deleteUser = async (req, res) => {
     res.status(400);
   }
 };
-const getUser = async (req, res) => {
-  const id = req.params.id;
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      console.log("User not found");
-      return res.status(404);
-    }
-    console.log("User details:", user);
-    res.status(200);
-  } catch (error) {
-    console.error("Error fetching user details:", error.message);
-    res.status(400);
-  }
-};
+
 module.exports = {
-  createUser,
-  updateUser,
-  deleteUser,
-  getUser,
+  register,
+  login,
+  edit,
+  delete: deleteUser,
 };
