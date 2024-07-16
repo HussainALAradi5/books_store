@@ -8,6 +8,7 @@ const bookSchema = new Schema({
   quantity: { type: Number, required: true },
   exist: { type: Boolean, default: false },
   price: { type: Number, default: 0.0 },
+  description: { type: String, required: true },
 });
 
 const book = mongoose.model("Book", bookSchema);

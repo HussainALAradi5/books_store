@@ -6,6 +6,8 @@ const userSchema = new Schema({
   password_digest: { type: String, required: true },
   email: { type: String, required: true },
   receipts: [{ type: Schema.Types.ObjectId, ref: "Receipt" }],
+  isActive: { type: Boolean, default: true },
+  admin: { type: Boolean, default: false },
 });
 
 const user = mongoose.model("User", userSchema);
