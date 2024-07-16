@@ -61,9 +61,24 @@ const deleteUser = async (req, res) => {
     res.status(400);
   }
 };
-
+const getUser = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      console.log("User not found");
+      return res.status(404);
+    }
+    console.log("User details:", user);
+    res.status(200);
+  } catch (error) {
+    console.error("Error fetching user details:", error.message);
+    res.status(400);
+  }
+};
 module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  getUser,
 };
