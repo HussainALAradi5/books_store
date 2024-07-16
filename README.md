@@ -17,7 +17,8 @@
 ### **_Technologies Used_**
 
 - JS( as its the languge that i use here)
-  -Express
+  -node (for runtime environment)
+  -Express(for backend)
   -React(library )
   -CSS
   -HTML
