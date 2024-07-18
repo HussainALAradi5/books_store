@@ -1,6 +1,9 @@
 * {
   font-family: monospace;
 }
+button {
+  transition: 1.5s;
+}
 .auth-container {
   max-width: 400px;
   margin: 0 auto;
@@ -15,7 +18,9 @@
   text-align: center;
   margin-bottom: 20px;
 }
-
+.auth-title:hover {
+  text-decoration: underline;
+}
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -32,12 +37,15 @@
 }
 
 .auth-input {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
-
+.auth-input:focus {
+  background-color: lightgreen;
+  transition: 1.5s;
+}
 .auth-button {
   padding: 10px;
   border: none;
@@ -87,6 +95,47 @@
   background-color: darkblue;
   transition: 1.5s;
 }
-button {
-  transition: 1.5s;
+
+.bookCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  max-width: 300px;
+  background-color: #fff;
+}
+
+.bookCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.bookCardImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
+}
+
+.bookCardContent {
+  padding: 16px;
+}
+
+.bookCardTitle {
+  font-size: 1.2em;
+  margin: 0;
+  color: #333;
+}
+
+.bookCardDescription {
+  color: #555;
+  margin: 8px 0;
+}
+
+.bookCardPrice {
+  font-weight: bold;
+  color: #000;
 }

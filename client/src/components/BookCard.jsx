@@ -1,14 +1,18 @@
-import React from "react";
-
 const BookCard = ({ book }) => {
   return (
     <div className="bookCard">
-      <img src={book.poster} alt={book.title} />
-      <h2>
-        {book.title} - {book.publishYear}
-      </h2>
-      <p>{book.description.substring(0, 100)}...</p>
-      <p>Price: ${book.price}</p>
+      <img src={book.poster} alt={book.title} className="bookCardImage" />
+      <div className="bookCardContent">
+        <h2 className="bookCardTitle">
+          {book.title} - {book.publishYear}
+        </h2>
+        <p className="bookCardDescription">
+          {book.description.length > 100
+            ? `${book.description.substring(0, 100)}...`
+            : book.description}
+        </p>
+        <p className="bookCardPrice">Price: ${book.price}</p>
+      </div>
     </div>
   );
 };
