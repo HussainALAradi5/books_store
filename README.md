@@ -1,6 +1,6 @@
-# books store
+# books store(still working on)
 
-## Date: 16/7/2024
+## Date: 16/7/2024(Work in progress)
 
 ### By: Hussain Al Aradi
 
