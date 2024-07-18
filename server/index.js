@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 connectDb();
-app.use("/", bookRoutes);
+app.use("/books", bookRoutes);
 
 app.use("/user", userRoutes);
 const PORT = process.env.PORT || 3000;

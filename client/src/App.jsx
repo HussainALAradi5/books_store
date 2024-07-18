@@ -1,10 +1,15 @@
-import "./App.css";
+import { BrowserRouter as Router } from "react-router-dom";
 import MainContainer from "./components/MainContainer";
+import "./App.css";
 
 function App() {
-  <div className="app">
-    <MainContainer />
-  </div>;
+  return (
+    <Router>
+      <div className="app">
+        <MainContainer />
+      </div>
+    </Router>
+  );
 }
 
 export default App;

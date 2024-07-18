@@ -3,31 +3,25 @@ const User = require("../models/user");
 
 const addBookToUser = async (req, res) => {
   try {
-    const { title, author, publishYear, price, description, poster } = req.body;
-    const newBook = new Book({
-      title,
-      author,
-      publishYear,
-      price,
-      description,
-      poster,
-    });
-    await newBook.save();
-
-    // Add the book to the user's books array
-    const userId = req.user.id; // Assuming you have userId in the req.user from authentication middleware
+    const { bookId } = req.body;
+    const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
       console.log("User not found.");
-      return res.status(404);
+      return res.status(404).send("User not found.");
     }
-    user.books.push(newBook._id);
+
+    if (user.books.includes(bookId)) {
+      return res.status(409).send({ message: "You already have this book." });
+    }
+
+    user.books.push(bookId);
     await user.save();
 
-    res.status(201).send(newBook);
+    res.status(201).send({ message: "Book purchased successfully." });
   } catch (error) {
     console.error("Error adding book to user:", error.message);
-    res.status(400);
+    res.status(400).send("Error adding book to user.");
   }
 };
 
@@ -46,7 +40,7 @@ const addBookToDatabase = async (req, res) => {
     res.status(201).send(newBook);
   } catch (error) {
     console.error("Error adding book to database:", error.message);
-    res.status(400);
+    res.status(400).send("Error adding book to database.");
   }
 };
 
@@ -56,7 +50,7 @@ const getAllBooks = async (req, res) => {
     res.status(200).send(books);
   } catch (error) {
     console.error("Error fetching books:", error.message);
-    res.status(400);
+    res.status(400).send("Error fetching books.");
   }
 };
 
@@ -66,12 +60,12 @@ const getBookById = async (req, res) => {
     const book = await Book.findById(id);
     if (!book) {
       console.log("Book not found.");
-      return res.status(404);
+      return res.status(404).send("Book not found.");
     }
     res.status(200).send(book);
   } catch (error) {
     console.error("Error fetching book:", error.message);
-    res.status(400);
+    res.status(400).send("Error fetching book.");
   }
 };
 
@@ -86,12 +80,12 @@ const updateBook = async (req, res) => {
     );
     if (!updatedBook) {
       console.log("Book not found.");
-      return res.status(404);
+      return res.status(404).send("Book not found.");
     }
     res.status(200).send(updatedBook);
   } catch (error) {
     console.error("Error updating book:", error.message);
-    res.status(400);
+    res.status(400).send("Error updating book.");
   }
 };
 
@@ -101,12 +95,12 @@ const deleteBook = async (req, res) => {
     const deletedBook = await Book.findByIdAndDelete(id);
     if (!deletedBook) {
       console.log("Book not found.");
-      return res.status(404);
+      return res.status(404).send("Book not found.");
     }
-    res.status(200);
+    res.status(200).send("Book deleted successfully.");
   } catch (error) {
     console.error("Error deleting book:", error.message);
-    res.status(400);
+    res.status(400).send("Error deleting book.");
   }
 };
 

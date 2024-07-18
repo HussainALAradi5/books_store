@@ -11,7 +11,7 @@ const register = async (req, res) => {
     const userExists = await checkUserExists(email);
     if (userExists) {
       console.log("User already registered with this email.");
-      return res.status(400);
+      return res.status(400).send("User already registered with this email.");
     }
 
     const password_digest = await hashPassword(password);
@@ -26,7 +26,7 @@ const register = async (req, res) => {
     res.status(201).send("New user created successfully.");
   } catch (error) {
     console.log("Error in creating user:", error.message);
-    res.status(400);
+    res.status(400).send("Error in creating user.");
   }
 };
 
@@ -36,13 +36,13 @@ const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       console.log("Invalid email or password.");
-      return res.status(400);
+      return res.status(400).send("Invalid email or password.");
     }
 
     const isMatch = await comparePassword(password, user.password_digest);
     if (!isMatch) {
       console.log("Invalid email or password.");
-      return res.status(400);
+      return res.status(400).send("Invalid email or password.");
     }
 
     const token = jwt.sign(
@@ -70,14 +70,14 @@ const edit = async (req, res) => {
 
     if (!updatedUser) {
       console.log("No user found with this email");
-      return res.status(404);
+      return res.status(404).send("No user found with this email.");
     }
 
     console.log("Updated user data:", updatedUser);
     res.status(200).send("User details updated successfully.");
   } catch (error) {
     console.error("Error updating user:", error.message);
-    res.status(400);
+    res.status(400).send("Error updating user.");
   }
 };
 
@@ -92,16 +92,18 @@ const deleteUser = async (req, res) => {
 
     if (!deletedUser) {
       console.log("User not found");
-      return res.status(404);
+      return res.status(404).send("User not found.");
     }
 
     console.log("User deleted successfully");
-    res.status(200);
+    res.status(200).send("User deleted successfully.");
   } catch (error) {
     console.error("Error deleting user:", error.message);
-    res.status(400);
+    res.status(400).send("Error deleting user.");
   }
 };
+
+// View user's books
 const viewBooks = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -113,9 +115,11 @@ const viewBooks = async (req, res) => {
     res.status(200).send(user.books);
   } catch (error) {
     console.error("Error fetching user books:", error.message);
-    res.status(400);
+    res.status(400).send("Error fetching user books.");
   }
 };
+
+// Make a user admin
 const makeAdmin = async (req, res) => {
   const { email } = req.body;
 
@@ -138,6 +142,7 @@ const makeAdmin = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 module.exports = {
   register,
   login,
