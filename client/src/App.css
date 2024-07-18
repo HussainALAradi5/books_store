@@ -43,8 +43,9 @@ button {
   border-radius: 4px;
 }
 .auth-input:focus {
-  background-color: lightgreen;
+  background-color: royalblue;
   transition: 1.5s;
+  color: whitesmoke;
 }
 .auth-button {
   padding: 10px;
@@ -138,4 +139,53 @@ button {
 .bookCardPrice {
   font-weight: bold;
   color: #000;
+}
+.aboutUs {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.aboutUs h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.aboutUs p {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.contactLinks {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.contactLink {
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 1em;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.linkedin {
+  background-color: #0077b5;
+}
+
+.github {
+  background-color: #333;
+}
+
+.email {
+  background-color: #007bff;
+}
+
+.contactLink:hover {
+  opacity: 0.8;
 }

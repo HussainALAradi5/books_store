@@ -6,6 +6,7 @@ import Register from "../pages/Register";
 import Profile from "../pages/Profile";
 import HomePage from "../pages/HomePage";
 import NavBar from "./NavBar";
+import AboutUs from "../pages/AboutUs";
 
 const MainContainer = () => {
   return (
@@ -17,6 +18,7 @@ const MainContainer = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<AboutUs />} />
       </Routes>
     </div>
   );
