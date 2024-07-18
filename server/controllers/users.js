@@ -116,10 +116,33 @@ const viewBooks = async (req, res) => {
     res.status(400);
   }
 };
+const makeAdmin = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Find user by email
+    const user = await User.findOne({ email });
+
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update user to admin
+    user.admin = true;
+    await user.save();
+
+    res.status(200).json({ message: "User updated to admin" });
+  } catch (error) {
+    console.error("Error updating user to admin:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 module.exports = {
   register,
   login,
   edit,
   delete: deleteUser,
   viewBooks,
+  makeAdmin,
 };
