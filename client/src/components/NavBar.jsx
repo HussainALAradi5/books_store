@@ -10,7 +10,6 @@ const NavBar = () => {
       const loggedIn = await isLoggedIn();
       setAuthenticated(loggedIn);
     };
-
     checkAuth();
   }, []);
 
@@ -27,6 +26,20 @@ const NavBar = () => {
             About Us
           </Link>
         </li>
+        {authenticated && (
+          <>
+            <li className="navItem">
+              <Link className="navLink" to="/receipts">
+                Receipts
+              </Link>
+            </li>
+            <li className="navItem">
+              <Link className="navLink" to="/profile">
+                Profile
+              </Link>
+            </li>
+          </>
+        )}
         {!authenticated && (
           <>
             <li className="navItem">
@@ -40,13 +53,6 @@ const NavBar = () => {
               </Link>
             </li>
           </>
-        )}
-        {authenticated && (
-          <li className="navItem">
-            <Link className="navLink" to="/profile">
-              Profile
-            </Link>
-          </li>
         )}
       </ul>
     </nav>

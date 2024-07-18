@@ -1,6 +1,7 @@
 * {
   font-family: monospace;
 }
+
 button {
   transition: 1.5s;
 }
@@ -93,7 +94,7 @@ button {
 }
 
 .navLink:hover {
-  background-color: darkblue;
+  background-color: black;
   transition: 1.5s;
 }
 
