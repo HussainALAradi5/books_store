@@ -57,6 +57,7 @@ showcase:
 ### **_Future Updates_**
 
 - [ ] enhancing the visuals
+- [ ] add an api to get the book auto-generated
 
 ---
 
