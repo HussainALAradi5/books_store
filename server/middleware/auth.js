@@ -19,7 +19,20 @@ const authenticate = (req, res, next) => {
     res.status(400);
   }
 };
-
+const authorizeAdmin = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user || !user.admin) {
+      console.log("Unauthorized. Admin access required.");
+      return res.status(403).send("Unauthorized. Admin access required.");
+    }
+    next();
+  } catch (error) {
+    console.error("Authorization error:", error.message);
+    res.status(400).send("Authorization error.");
+  }
+};
 // hash the password
 const hashPassword = async (password) => {
   const saltRounds = 3;
@@ -48,4 +61,5 @@ module.exports = {
   hashPassword,
   comparePassword,
   checkUserExists,
+  authorizeAdmin,
 };
