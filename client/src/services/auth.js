@@ -1,13 +1,8 @@
-// src/services/authService.js
-
 import axios from "axios";
-
 const API_URL = "http://localhost:3000/api";
-
 // Authentication Functions
 export const login = async (email, password) => {
   try {
-    // Send plain password to backend
     const response = await axios.post(`${API_URL}/user/login`, {
       email,
       password,
@@ -23,7 +18,6 @@ export const login = async (email, password) => {
 
 export const register = async (username, email, password) => {
   try {
-    // Send plain password to backend
     const response = await axios.post(`${API_URL}/user/register`, {
       username,
       email,
@@ -55,7 +49,6 @@ export const isLoggedIn = async () => {
   }
 };
 
-// Security Functions
 export const getToken = () => {
   return localStorage.getItem("token");
 };

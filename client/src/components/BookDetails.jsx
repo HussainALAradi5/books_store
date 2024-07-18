@@ -1,60 +1,128 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Comment from "./Comment";
+import Rating from "./Rating";
+import { getToken } from "../services/auth";
+
+const API_URL = "http://localhost:3000";
 
 const BookDetails = () => {
   const { id } = useParams();
   const [book, setBook] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/books/${id}`);
+        const response = await axios.get(`${API_URL}/books/${id}`);
         setBook(response.data);
       } catch (error) {
         console.error("Error fetching book details:", error.message);
+        setError("Error fetching book details.");
+      }
+    };
+
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/books/${id}/comments`);
+        setComments(response.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error.message);
+        setError("Error fetching comments.");
+      }
+    };
+
+    const fetchAverageRating = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/books/${id}/ratings`);
+        const { totalRatings, count } = response.data;
+        const avgRating = count > 0 ? totalRatings / count : 0;
+        setAverageRating(avgRating);
+      } catch (error) {
+        console.error("Error fetching average rating:", error.message);
+        setError("Error fetching average rating.");
       }
     };
 
     fetchBook();
+    fetchComments();
+    fetchAverageRating();
+    setLoading(false);
   }, [id]);
 
-  const handleBuyBook = async () => {
+  const handleCommentAdded = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:3000/books/add`,
-        { bookId: id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setMessage(response.data.message);
+      // Fetch updated comments only
+      const response = await axios.get(`${API_URL}/books/${id}/comments`);
+      setComments(response.data);
     } catch (error) {
-      if (error.response && error.response.status === 409) {
-        setMessage("You already have this book.");
-      } else {
-        console.error("Error buying book:", error.message);
-        setMessage("Error buying book.");
-      }
+      console.error("Error updating comments:", error.message);
+      setError("Error updating comments.");
     }
   };
 
-  if (!book) return <div>Loading...</div>;
+  const handleRatingAdded = async () => {
+    try {
+      // Re-fetch average rating after adding a new rating
+      const response = await axios.get(`${API_URL}/books/${id}/ratings`);
+      const { totalRatings, count } = response.data;
+      const avgRating = count > 0 ? totalRatings / count : 0;
+      setAverageRating(avgRating);
+    } catch (error) {
+      console.error("Error updating average rating:", error.message);
+      setError("Error updating average rating.");
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="bookDetails">
-      <img src={book.poster} alt={book.title} />
-      <h1>{book.title}</h1>
-      <h2>Author: {book.author}</h2>
-      <h3>Published Year: {book.publishYear}</h3>
-      <p>{book.description}</p>
-      <p>Price: ${book.price}</p>
-      <button onClick={handleBuyBook}>Buy</button>
-      {message && <p>{message}</p>}
+      {book ? (
+        <>
+          <img src={book.poster} alt={book.title} />
+          <h1>{book.title}</h1>
+          <h2>Author: {book.author}</h2>
+          <h3>Published Year: {book.publishYear}</h3>
+          <p>{book.description}</p>
+          <p>Price: ${book.price}</p>
+          <p>Average Rating: {averageRating.toFixed(2)}</p>
+          {getToken() ? (
+            <>
+              <Comment bookId={id} onCommentAdded={handleCommentAdded} />
+              <Rating bookId={id} onRatingAdded={handleRatingAdded} />
+              <div className="commentsSection">
+                <h2>Comments</h2>
+                {comments.length > 0 ? (
+                  <ul>
+                    {comments.map((comment) => (
+                      <li key={comment._id}>
+                        <p>{comment.text}</p>
+                        <p>
+                          <small>{comment.author}</small>
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No comments yet.</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <p>You need to be logged in to comment or rate this book.</p>
+          )}
+          {message && <p>{message}</p>}
+        </>
+      ) : (
+        <p>No book details available.</p>
+      )}
     </div>
   );
 };
