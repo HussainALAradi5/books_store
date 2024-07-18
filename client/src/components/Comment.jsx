@@ -8,8 +8,8 @@ const Comment = ({ bookId, onCommentAdded }) => {
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
       const token = getToken();
@@ -35,7 +35,7 @@ const Comment = ({ bookId, onCommentAdded }) => {
       <form onSubmit={handleSubmit}>
         <textarea
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(event) => setComment(event.target.value)}
           placeholder="Write your comment here..."
           required
         />

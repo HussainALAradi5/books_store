@@ -8,8 +8,8 @@ const Rating = ({ bookId, onRatingAdded }) => {
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
       const token = getToken();
@@ -38,7 +38,7 @@ const Rating = ({ bookId, onRatingAdded }) => {
           min="1"
           max="5"
           value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
+          onChange={(event) => setRating(Number(event.target.value))}
           required
         />
         <button type="submit">Submit Rating</button>

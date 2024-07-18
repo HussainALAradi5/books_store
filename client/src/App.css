@@ -189,3 +189,50 @@ button {
 .contactLink:hover {
   opacity: 0.8;
 }
+.receipt {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.receipts-list {
+  margin-bottom: 20px;
+}
+
+.receipts-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.receipts-list li {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.receipts-list li:hover {
+  background-color: #f1f1f1;
+}
+
+.receipt-details {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.receipt-details h2 {
+  margin-top: 0;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}

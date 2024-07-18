@@ -7,6 +7,7 @@ import Profile from "../pages/Profile";
 import HomePage from "../pages/HomePage";
 import NavBar from "./NavBar";
 import AboutUs from "../pages/AboutUs";
+import Receipt from "./Receipt";
 
 const MainContainer = () => {
   return (
@@ -19,6 +20,7 @@ const MainContainer = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/receipts" element={<Receipt />} />
       </Routes>
     </div>
   );
