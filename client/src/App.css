@@ -56,6 +56,7 @@
   margin-top: 10px;
   color: #ff0000;
   text-align: center;
+  font-family: cursive;
 }
 .navbar {
   background-color: royalblue;
@@ -84,5 +85,8 @@
 
 .navLink:hover {
   background-color: darkblue;
+  transition: 1.5s;
+}
+button {
   transition: 1.5s;
 }
