@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { isLoggedIn } from "../services/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { isLoggedIn, logout } from "../services/auth";
 
 const NavBar = () => {
   const [authenticated, setAuthenticated] = useState(false);
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -13,6 +14,12 @@ const NavBar = () => {
     };
     checkAuth();
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    setAuthenticated(false); // Update the state to reflect the logout
+    navigate("/"); // Redirect to the home page
+  };
 
   return (
     <nav className="navbar">
@@ -37,6 +44,11 @@ const NavBar = () => {
             <li className="navItem">
               <Link className="navLink" to="/profile">
                 Profile
+              </Link>
+            </li>
+            <li className="navItem">
+              <Link className="navLink" to="/" onClick={handleLogout}>
+                Logout
               </Link>
             </li>
           </>
