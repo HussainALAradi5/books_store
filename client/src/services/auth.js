@@ -40,7 +40,7 @@ export const isLoggedIn = async () => {
     const token = localStorage.getItem('token')
     if (!token) return false
 
-    const response = await axios.get(`${API_URL}/user/status`, {
+    const response = await axios.get(`${API_URL}user/profile`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data.loggedIn

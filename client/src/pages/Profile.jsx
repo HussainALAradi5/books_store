@@ -52,7 +52,7 @@ const Profile = () => {
           </p>
           <div className="books">
             <h2>Books</h2>
-            {user.books.length > 0 ? (
+            {user.books && user.books.length > 0 ? (
               <ul>
                 {user.books.map((book) => (
                   <li key={book._id}>{book.title}</li>
