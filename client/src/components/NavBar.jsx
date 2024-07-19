@@ -8,6 +8,7 @@ const NavBar = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const loggedIn = await isLoggedIn();
+      console.log("Authenticated:", loggedIn); // Debugging line
       setAuthenticated(loggedIn);
     };
     checkAuth();
@@ -26,7 +27,7 @@ const NavBar = () => {
             About Us
           </Link>
         </li>
-        {authenticated && (
+        {authenticated ? (
           <>
             <li className="navItem">
               <Link className="navLink" to="/receipts">
@@ -39,8 +40,7 @@ const NavBar = () => {
               </Link>
             </li>
           </>
-        )}
-        {!authenticated && (
+        ) : (
           <>
             <li className="navItem">
               <Link className="navLink" to="/register">

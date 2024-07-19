@@ -122,6 +122,7 @@ const viewUserData = async (req, res) => {
       isActive: user.isActive,
       admin: user.admin,
       books: user.books,
+      loggedIn: true,
     });
   } catch (error) {
     console.error("Error fetching user data:", error.message);

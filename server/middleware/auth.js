@@ -10,6 +10,7 @@ const authenticate = (req, res, next) => {
     return res.status(401).send("Access denied. No token provided.");
   }
   try {
+    // Use backend configuration to get JWT secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
@@ -66,7 +67,6 @@ const authorizeAdmin = async (req, res, next) => {
 // Hash the password
 const hashPassword = async (password) => {
   const saltRounds = 3;
-
   return await bcrypt.hash(password, saltRounds);
 };
 
@@ -81,6 +81,12 @@ const checkUserExists = async (email) => {
   return !!user;
 };
 
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id, email: user.email }, token, {
+    expiresIn: "1h",
+  });
+};
+
 module.exports = {
   authenticate,
   checkUserActiveStatus,
@@ -89,4 +95,5 @@ module.exports = {
   hashPassword,
   comparePassword,
   checkUserExists,
+  generateToken,
 };

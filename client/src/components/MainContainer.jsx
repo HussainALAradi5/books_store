@@ -8,7 +8,6 @@ import HomePage from "../pages/HomePage";
 import NavBar from "./NavBar";
 import AboutUs from "../pages/AboutUs";
 import Receipt from "./Receipt";
-
 const MainContainer = () => {
   return (
     <div className="MainContainer">

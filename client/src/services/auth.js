@@ -38,13 +38,17 @@ export const logout = () => {
 export const isLoggedIn = async () => {
   try {
     const token = localStorage.getItem("token");
+    console.log("token:", token);
+
     if (!token) return false;
 
     const response = await axios.get(`${API_URL}user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data.loggedIn;
-  } catch {
+    console.log(response.data.loggedIn);
+    return response.data.loggedIn === true;
+  } catch (error) {
+    console.error("Error checking login status:", error.message);
     return false;
   }
 };
