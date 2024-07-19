@@ -4,18 +4,18 @@ import { isLoggedIn, logout } from "../services/auth";
 
 const NavBar = () => {
   const [authenticated, setAuthenticated] = useState(false);
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       const loggedIn = await isLoggedIn();
-      console.log("Authenticated:", loggedIn); // Debugging line
+      console.log("Authenticated:", loggedIn);
       setAuthenticated(loggedIn);
     };
-    checkAuth();
+    checkAuth(); // Check auth status when component mounts
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     logout();
     setAuthenticated(false); // Update the state to reflect the logout
     navigate("/"); // Redirect to the home page

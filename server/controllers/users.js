@@ -104,7 +104,7 @@ const deleteUser = async (req, res) => {
 };
 const viewUserData = async (req, res) => {
   try {
-    const userId = req.user.id; // Extract user ID from the request object set by the authentication middleware
+    const userId = req.user.id;
 
     // Find user by ID
     const user = await User.findById(userId);

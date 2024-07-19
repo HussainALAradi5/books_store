@@ -1,24 +1,24 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { register } from '../services/auth'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { register } from "../services/auth";
 
 const Register = () => {
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-  const navigate = useNavigate()
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     try {
-      await register(username, email, password)
-      setMessage('Registration successful! Redirecting...')
-      setTimeout(() => navigate('/login'), 2000)
+      await register(username, email, password);
+      setMessage("Registration successful! Redirecting...");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      setMessage('Error registering. Please try again.😐')
+      setMessage("Error registering. Please try again.😐");
     }
-  }
+  };
 
   return (
     <div className="auth-container">
@@ -72,7 +72,7 @@ const Register = () => {
         {message && <p className="auth-message">{message}</p>}
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

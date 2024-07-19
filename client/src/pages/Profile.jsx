@@ -29,38 +29,41 @@ const Profile = () => {
     fetchUserDetails();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
-    <div className="profile">
+    <div className="profile-container">
       {error ? (
         <p className="error-message">{error}</p>
       ) : user ? (
-        <div>
-          <h1>Profile</h1>
-          <p>
-            <strong>Username:</strong> {user.username}
-          </p>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Active:</strong> {user.isActive ? "Yes" : "No"}
-          </p>
-          <p>
-            <strong>Admin:</strong> {user.admin ? "Yes" : "No"}
-          </p>
-          <div className="books">
-            <h2>Books</h2>
-            {user.books && user.books.length > 0 ? (
-              <ul>
-                {user.books.map((book) => (
-                  <li key={book._id}>{book.title}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>No books owned.</p>
-            )}
+        <div className="profile-card">
+          <div className="profile-header">
+            <h1>{user.username}'s Profile</h1>
+          </div>
+          <div className="profile-body">
+            <div className="profile-info">
+              <p>
+                <strong>Email:</strong> {user.email}
+              </p>
+              <p>
+                <strong>Active:</strong> {user.isActive ? "Yes" : "No"}
+              </p>
+              <p>
+                <strong>Admin:</strong> {user.admin ? "Yes" : "No"}
+              </p>
+            </div>
+            <div className="profile-books">
+              <h2>Books</h2>
+              {user.books && user.books.length > 0 ? (
+                <ul>
+                  {user.books.map((book) => (
+                    <li key={book._id}>{book.title}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No books owned.</p>
+              )}
+            </div>
           </div>
         </div>
       ) : (
