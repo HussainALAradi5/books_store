@@ -1,10 +1,17 @@
+/* Global Styles */
 * {
   font-family: monospace;
 }
 
 button {
-  transition: 1.5s;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
 }
+
+/* Auth Container */
 .auth-container {
   max-width: 400px;
   margin: 0 auto;
@@ -19,9 +26,11 @@ button {
   text-align: center;
   margin-bottom: 20px;
 }
+
 .auth-title:hover {
   text-decoration: underline;
 }
+
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -43,19 +52,18 @@ button {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
 .auth-input:focus {
   background-color: royalblue;
-  transition: 1.5s;
   color: whitesmoke;
+  border-color: royalblue;
+  outline: none;
 }
+
 .auth-button {
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
   background-color: #007bff;
   color: #fff;
   font-size: 16px;
-  cursor: pointer;
 }
 
 .auth-button:hover {
@@ -68,6 +76,8 @@ button {
   text-align: center;
   font-family: cursive;
 }
+
+/* Navbar */
 .navbar {
   background-color: royalblue;
   padding: 10px;
@@ -95,9 +105,9 @@ button {
 
 .navLink:hover {
   background-color: black;
-  transition: 1.5s;
 }
 
+/* Book Card */
 .bookCard {
   display: flex;
   flex-direction: column;
@@ -105,9 +115,9 @@ button {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
   max-width: 300px;
   background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .bookCard:hover {
@@ -141,6 +151,8 @@ button {
   font-weight: bold;
   color: #000;
 }
+
+/* About Us */
 .aboutUs {
   padding: 20px;
   max-width: 800px;
@@ -160,6 +172,7 @@ button {
   margin-bottom: 30px;
 }
 
+/* Contact Links */
 .contactLinks {
   display: flex;
   justify-content: center;
@@ -172,7 +185,7 @@ button {
   border-radius: 5px;
   color: #fff;
   font-size: 1em;
-  transition: background-color 0.3s, color 0.3s;
+  transition: opacity 0.3s ease;
 }
 
 .linkedin {
@@ -190,6 +203,8 @@ button {
 .contactLink:hover {
   opacity: 0.8;
 }
+
+/* Receipt */
 .receipt {
   max-width: 800px;
   margin: 0 auto;
@@ -233,14 +248,10 @@ button {
   margin-top: 0;
 }
 
-.error-message {
-  color: red;
-  font-weight: bold;
-}
+/* Profile */
 .profile-container {
   display: flex;
   justify-content: center;
-
   min-height: 100vh;
   background-color: #f4f4f4;
   padding: 20px;
@@ -251,7 +262,6 @@ button {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  height: 40%;
   max-width: 600px;
   padding: 20px;
   box-sizing: border-box;
@@ -288,6 +298,7 @@ button {
   padding: 10px;
 }
 
+/* Loading and Error Messages */
 .loading {
   text-align: center;
   font-size: 18px;
@@ -298,7 +309,10 @@ button {
   color: red;
   font-size: 16px;
   text-align: center;
+  font-weight: bold;
 }
+
+/* Admin Panel */
 .adminPanel {
   max-width: 900px;
   margin: 20px auto;
@@ -308,15 +322,15 @@ button {
   background-color: #fff;
 }
 
-.search-section,
-.form-section,
-.remove-section,
-.add-section,
-.admin-request-section {
+.adminPanel .search-section,
+.adminPanel .form-section,
+.adminPanel .remove-section,
+.adminPanel .add-section,
+.adminPanel .admin-request-section {
   margin-bottom: 20px;
 }
 
-h2 {
+.adminPanel h2 {
   margin-bottom: 15px;
   color: #333;
   font-size: 1.5em;
@@ -340,14 +354,9 @@ h2 {
 }
 
 .action-button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
   background-color: #007bff;
   color: #fff;
   font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .action-button:hover {
@@ -369,7 +378,60 @@ h2 {
   color: green;
 }
 
-.form-textarea {
-  height: 100px;
-  resize: vertical;
+/* Request Admin */
+.request-admin {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.request-admin h2 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.request-admin p {
+  font-size: 1em;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.request-admin label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.request-admin input,
+.request-admin textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.request-admin button {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.request-admin button:hover {
+  background-color: #0056b3;
+}
+
+.request-status {
+  margin-top: 10px;
+  font-weight: bold;
+  color: green;
+}
+
+.request-error {
+  color: red;
 }

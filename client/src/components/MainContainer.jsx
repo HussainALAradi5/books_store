@@ -8,6 +8,7 @@ import NavBar from "./NavBar";
 import AboutUs from "../pages/AboutUs";
 import Receipt from "./Receipt";
 import { useState } from "react";
+import SeeRequest from "./SeeRequests";
 
 const MainContainer = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -29,6 +30,7 @@ const MainContainer = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/receipts" element={<Receipt />} />
+        <Route path="/seerequest" element={<SeeRequest />} />
       </Routes>
     </div>
   );

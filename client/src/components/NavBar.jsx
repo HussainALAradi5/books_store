@@ -1,14 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { isLoggedIn, logout } from "../services/auth";
+import { isLoggedIn, getUserDetails, logout } from "../services/auth";
 
 const NavBar = ({ authenticated, setAuthenticated }) => {
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       const loggedIn = await isLoggedIn();
       setAuthenticated(loggedIn);
+
+      if (loggedIn) {
+        // Fetch user data to check if user is an admin
+        const userData = await getUserDetails();
+        setIsAdmin(userData.admin);
+      }
     };
     checkAuth();
   }, [setAuthenticated]);
@@ -44,6 +51,13 @@ const NavBar = ({ authenticated, setAuthenticated }) => {
                 Profile
               </Link>
             </li>
+            {isAdmin && (
+              <li className="navItem">
+                <Link className="navLink" to="/seerequest">
+                  See Requests
+                </Link>
+              </li>
+            )}
             <li className="navItem">
               <Link className="navLink" to="/" onClick={handleLogout}>
                 Logout

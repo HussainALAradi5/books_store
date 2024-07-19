@@ -22,8 +22,7 @@ const Profile = () => {
 
         const userDetails = await getUserDetails();
         setUser(userDetails);
-        setIsAdmin(userDetails.admin); // Determine if user is an admin
-        console.log(userDetails.admin); // Log the admin status to verify
+        setIsAdmin(userDetails.admin);
       } catch (error) {
         console.error("Error fetching user details:", error.message);
         setError("Error fetching user details.");

@@ -168,7 +168,48 @@ const makeAdmin = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+const getRequests = async (req, res) => {
+  try {
+    const requests = await User.find({ requestAdmin: true });
+    res.status(200).json(requests);
+  } catch (error) {
+    console.error("Error fetching admin requests:", error.message);
+    res.status(400).send("Error fetching admin requests.");
+  }
+};
 
+const acceptRequest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+    user.admin = true;
+    user.requestAdmin = false;
+    await user.save();
+    res.status(200).send("Request accepted and user made admin.");
+  } catch (error) {
+    console.error("Error accepting admin request:", error.message);
+    res.status(400).send("Error accepting admin request.");
+  }
+};
+
+const rejectRequest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+    user.requestAdmin = false;
+    await user.save();
+    res.status(200).send("Request rejected.");
+  } catch (error) {
+    console.error("Error rejecting admin request:", error.message);
+    res.status(400).send("Error rejecting admin request.");
+  }
+};
 module.exports = {
   register,
   login,
@@ -177,4 +218,7 @@ module.exports = {
   viewBooks,
   makeAdmin,
   viewUserData,
+  getRequests,
+  acceptRequest,
+  rejectRequest,
 };
