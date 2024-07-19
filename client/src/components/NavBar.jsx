@@ -6,12 +6,13 @@ const NavBar = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const navigate = useNavigate();
 
+  const checkAuth = async () => {
+    const loggedIn = await isLoggedIn();
+    console.log("Authenticated:", loggedIn);
+    setAuthenticated(loggedIn);
+  };
+
   useEffect(() => {
-    const checkAuth = async () => {
-      const loggedIn = await isLoggedIn();
-      console.log("Authenticated:", loggedIn);
-      setAuthenticated(loggedIn);
-    };
     checkAuth(); // Check auth status when component mounts
   }, []);
 
@@ -19,6 +20,7 @@ const NavBar = () => {
     logout();
     setAuthenticated(false); // Update the state to reflect the logout
     navigate("/"); // Redirect to the home page
+    window.location.reload(); // Force reload to update NavBar
   };
 
   return (

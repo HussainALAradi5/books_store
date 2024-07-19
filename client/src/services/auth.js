@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const API_URL = "http://localhost:3000/";
 
 export const login = async (email, password) => {
@@ -11,9 +12,10 @@ export const login = async (email, password) => {
     localStorage.setItem("token", response.data.token);
     return response.data;
   } catch (error) {
-    throw new Error(
-      error.response ? error.response.data.message : "Error logging in."
-    );
+    const errorMessage = error.response
+      ? error.response.data.message
+      : "Error logging in.";
+    throw new Error(errorMessage);
   }
 };
 
@@ -26,9 +28,10 @@ export const register = async (username, email, password) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(
-      error.response ? error.response.data.message : "Error registering."
-    );
+    const errorMessage = error.response
+      ? error.response.data.message
+      : "Error registering.";
+    throw new Error(errorMessage);
   }
 };
 
@@ -40,7 +43,6 @@ export const isLoggedIn = async () => {
   try {
     const token = localStorage.getItem("token");
     console.log("token:", token);
-
     if (!token) return false;
 
     const response = await axios.get(`${API_URL}user/profile`, {

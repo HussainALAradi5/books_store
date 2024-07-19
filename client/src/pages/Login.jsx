@@ -13,7 +13,10 @@ const Login = () => {
     try {
       await login(email, password);
       setMessage("Login successful! Redirecting...");
-      setTimeout(() => navigate("/profile"), 2000);
+      setTimeout(() => {
+        navigate("/profile");
+        window.location.reload(); // Force reload to update NavBar
+      }, 2000);
     } catch (error) {
       setMessage("Invalid credentials. Please try again.");
     }
