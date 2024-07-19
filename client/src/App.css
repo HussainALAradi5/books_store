@@ -299,3 +299,77 @@ button {
   font-size: 16px;
   text-align: center;
 }
+.adminPanel {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.search-section,
+.form-section,
+.remove-section,
+.add-section,
+.admin-request-section {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.search-input,
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.search-input:focus,
+.form-input:focus,
+.form-textarea:focus {
+  border-color: royalblue;
+  outline: none;
+}
+
+.action-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.action-button:hover {
+  background-color: #0056b3;
+}
+
+.remove-section,
+.add-section,
+.admin-request-section {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.request-status {
+  margin-top: 10px;
+  font-weight: bold;
+  color: green;
+}
+
+.form-textarea {
+  height: 100px;
+  resize: vertical;
+}

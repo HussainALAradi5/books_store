@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { getToken, getUserDetails } from "../services/auth";
+import AdminPanel from "../components/AdminPanel";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -18,6 +20,7 @@ const Profile = () => {
 
         const userDetails = await getUserDetails();
         setUser(userDetails);
+        setIsAdmin(userDetails.admin); // Determine if user is an admin
       } catch (error) {
         console.error("Error fetching user details:", error.message);
         setError("Error fetching user details.");
@@ -28,6 +31,11 @@ const Profile = () => {
 
     fetchUserDetails();
   }, []);
+
+  const setBookDetails = (details) => {
+    // Example implementation for setting book details
+    console.log("Setting book details:", details);
+  };
 
   if (loading) return <div className="loading">Loading...</div>;
 
@@ -65,6 +73,7 @@ const Profile = () => {
               )}
             </div>
           </div>
+          {isAdmin && <AdminPanel setBookDetails={setBookDetails} />}
         </div>
       ) : (
         <p>No user information available.</p>
