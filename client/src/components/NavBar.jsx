@@ -1,26 +1,22 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isLoggedIn, logout } from "../services/auth";
 
-const NavBar = () => {
-  const [authenticated, setAuthenticated] = useState(false);
+const NavBar = ({ authenticated, setAuthenticated }) => {
   const navigate = useNavigate();
 
-  const checkAuth = async () => {
-    const loggedIn = await isLoggedIn();
-    console.log("Authenticated:", loggedIn);
-    setAuthenticated(loggedIn);
-  };
-
   useEffect(() => {
-    checkAuth(); // Check auth status when component mounts
-  }, []);
+    const checkAuth = async () => {
+      const loggedIn = await isLoggedIn();
+      setAuthenticated(loggedIn);
+    };
+    checkAuth();
+  }, [setAuthenticated]);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     logout();
-    setAuthenticated(false); // Update the state to reflect the logout
-    navigate("/"); // Redirect to the home page
-    window.location.reload(); // Force reload to update NavBar
+    setAuthenticated(false);
+    navigate("/");
   };
 
   return (

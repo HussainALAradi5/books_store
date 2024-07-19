@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import BookCard from "../components/BookCard";
-
 const HomePage = () => {
   const [books, setBooks] = useState([]);
 

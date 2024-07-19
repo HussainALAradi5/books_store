@@ -5,7 +5,7 @@ const ratingCtrl = require("../controllers/ratings");
 const commentCtrl = require("../controllers/comments");
 const receiptCtrl = require("../controllers/receipt");
 const { authenticate, authorizeAdmin } = require("../middleware/auth");
-
+router.get("/", bookCtrl.getAllBooks);
 router.use(authenticate);
 
 // Book routes
@@ -21,7 +21,7 @@ router.post("/add", bookCtrl.addBookToUser, receiptCtrl.generateReceipt); // Han
 
 // Admin routes for managing books
 router.post("/addToDatabase", authorizeAdmin, bookCtrl.addBookToDatabase);
-router.get("/", bookCtrl.getAllBooks);
+
 router.get("/:id", bookCtrl.getBookById);
 router.put("/:id", bookCtrl.updateBook);
 router.delete("/:id", authorizeAdmin, bookCtrl.deleteBook);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 
-const Login = () => {
+const Login = ({ setAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -13,10 +13,8 @@ const Login = () => {
     try {
       await login(email, password);
       setMessage("Login successful! Redirecting...");
-      setTimeout(() => {
-        navigate("/profile");
-        window.location.reload(); // Force reload to update NavBar
-      }, 2000);
+      setAuthenticated(true);
+      setTimeout(() => navigate("/profile"), 2000);
     } catch (error) {
       setMessage("Invalid credentials. Please try again.");
     }

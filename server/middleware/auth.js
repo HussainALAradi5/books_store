@@ -7,6 +7,7 @@ const authenticate = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
     console.log("Access denied. No token provided.");
+
     return res.status(401).send("Access denied. No token provided.");
   }
   try {
