@@ -10,7 +10,7 @@ const SeeRequest = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:3000/users/requests",
+          "http://localhost:3000/user/requests",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -29,7 +29,7 @@ const SeeRequest = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3000/users/requests/${id}/accept`,
+        `http://localhost:3000/user/requests/${id}/accept`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -45,7 +45,7 @@ const SeeRequest = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3000/users/requests/${id}/reject`,
+        `http://localhost:3000/user/requests/${id}/reject`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -58,18 +58,32 @@ const SeeRequest = () => {
   };
 
   return (
-    <div className="see-request">
+    <div className="see-request-container">
       {statusMessage && <p className="status-message">{statusMessage}</p>}
       <h2>Admin Requests</h2>
-      <ul>
+      <div className="request-list">
         {requests.map((request) => (
-          <li key={request._id}>
-            <p>{request.username} wants admin privileges.</p>
-            <button onClick={() => handleAccept(request._id)}>Accept</button>
-            <button onClick={() => handleReject(request._id)}>Reject</button>
-          </li>
+          <div className="request-card" key={request._id}>
+            <p className="request-username">
+              {request.username} wants admin privileges.
+            </p>
+            <div className="request-actions">
+              <button
+                className="action-button accept-button"
+                onClick={() => handleAccept(request._id)}
+              >
+                Accept
+              </button>
+              <button
+                className="action-button reject-button"
+                onClick={() => handleReject(request._id)}
+              >
+                Reject
+              </button>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
