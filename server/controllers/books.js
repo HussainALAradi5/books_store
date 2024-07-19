@@ -24,6 +24,22 @@ const addBookToUser = async (req, res) => {
     res.status(400).send("Error adding book to user.");
   }
 };
+const findBookByName = async (req, res) => {
+  const { name } = req.query; // Assuming you're sending the book name as a query parameter
+
+  try {
+    const book = await Book.findOne({ title: name });
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.status(200).json(book);
+  } catch (error) {
+    console.error("Error finding book:", error.message);
+    res.status(400).send("Error finding book.");
+  }
+};
 
 const addBookToDatabase = async (req, res) => {
   try {
@@ -111,4 +127,5 @@ module.exports = {
   getBookById,
   updateBook,
   deleteBook,
+  findBookByName,
 };

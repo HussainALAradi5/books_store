@@ -11,7 +11,6 @@ const authenticate = (req, res, next) => {
     return res.status(401).send("Access denied. No token provided.");
   }
   try {
-    // Use backend configuration to get JWT secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
@@ -25,7 +24,7 @@ const authenticate = (req, res, next) => {
 const checkUserActiveStatus = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
-    if (!user || !user.isActive) {
+    if (!user.isActive) {
       return res.status(403).send("Your account is not active.");
     }
     next();
@@ -54,7 +53,7 @@ const checkBookOwnership = async (req, res, next) => {
 const authorizeAdmin = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
-    if (!user || !user.admin) {
+    if (!user.admin) {
       console.log("Unauthorized. Admin access required.");
       return res.status(403).send("Unauthorized. Admin access required.");
     }
