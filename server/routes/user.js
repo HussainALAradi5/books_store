@@ -1,41 +1,19 @@
-// routes/user.js
-const express = require("express");
-const router = express.Router();
-const userCtrl = require("../controllers/users");
-const auth = require("../middleware/auth");
+const express = require('express')
+const router = express.Router()
+const userCtrl = require('../controllers/users')
+const receiptCtrl = require('../controllers/receipt')
+const { authenticate, authorizeAdmin } = require('../middleware/auth')
 
-// Register a new user
-router.post("/register", userCtrl.register);
+router.use(authenticate)
 
-// Login user
-router.post("/login", userCtrl.login);
+// User routes
+router.post('/register', userCtrl.register)
+router.post('/login', userCtrl.login)
+router.put('/edit', userCtrl.edit)
+router.delete('/:id', authorizeAdmin, userCtrl.delete)
+router.get('/books', userCtrl.viewBooks)
 
-// Edit user details
-router.put("/edit", auth.authenticate, userCtrl.edit);
+// Route to fetch user receipts
+router.get('/receipts', receiptCtrl.getUserReceipts)
 
-// Delete user (soft delete)
-router.delete("/delete/:id", auth.authenticate, userCtrl.delete);
-
-// Get user's books
-router.get("/books", auth.authenticate, userCtrl.viewBooks);
-
-// Purchase books (example route for buying books)
-router.post(
-  "/purchase",
-  auth.authenticate,
-  userCtrl.purchaseBooks,
-  userCtrl.generateReceipt
-);
-
-// Get user receipts
-router.get("/receipts", auth.authenticate, userCtrl.getUserReceipts);
-
-// Make a user admin
-router.post(
-  "/admin",
-  auth.authenticate,
-  auth.authorizeAdmin,
-  userCtrl.makeAdmin
-);
-
-module.exports = router;
+module.exports = router

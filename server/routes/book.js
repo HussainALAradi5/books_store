@@ -1,24 +1,28 @@
-const express = require("express");
-const router = express.Router();
-const bookCtrl = require("../controllers/book");
-const ratingCtrl = require("../controllers/rating");
-const commentCtrl = require("../controllers/comment");
-const { authenticate, authorizeAdmin } = require("../middleware/auth");
+const express = require('express')
+const router = express.Router()
+const bookCtrl = require('../controllers/books')
+const ratingCtrl = require('../controllers/ratings')
+const commentCtrl = require('../controllers/comments')
+const { authenticate, authorizeAdmin } = require('../middleware/auth')
 
-router.use(authenticate);
+router.use(authenticate)
 
-router.post("/:id/ratings", authenticate, ratingCtrl.rateThisBook);
-router.get("/:id/ratings", authenticate, ratingCtrl.showTotalRating);
+// Book routes
+router.post('/:id/ratings', ratingCtrl.rateThisBook)
+router.get('/:id/ratings', ratingCtrl.showTotalRating)
 
-router.post("/:id/comments", authenticate, commentCtrl.addComment);
-router.put("/comments/:id", authenticate, commentCtrl.editComment);
-router.delete("/comments/:id", authenticate, commentCtrl.removeComment);
+router.post('/:id/comments', commentCtrl.addComment)
+router.put('/comments/:id', commentCtrl.editComment)
+router.delete('/comments/:id', commentCtrl.removeComment)
 
-router.post("/add", authenticate, bookCtrl.addBookToUser);
-router.post("/addToDatabase", authorizeAdmin, bookCtrl.addBookToDatabase);
-router.get("/", bookCtrl.getAllBooks);
-router.get("/:id", authenticate, bookCtrl.getBookById);
-router.put("/:id", authenticate, bookCtrl.updateBook);
-router.delete("/:id", authorizeAdmin, bookCtrl.deleteBook);
+// Add book to user's collection and generate receipt
+router.post('/add', bookCtrl.addBookToUser) // Handles adding book and receipt generation
 
-module.exports = router;
+// Admin routes for managing books
+router.post('/addToDatabase', authorizeAdmin, bookCtrl.addBookToDatabase)
+router.get('/', bookCtrl.getAllBooks)
+router.get('/:id', bookCtrl.getBookById)
+router.put('/:id', bookCtrl.updateBook)
+router.delete('/:id', authorizeAdmin, bookCtrl.deleteBook)
+
+module.exports = router
