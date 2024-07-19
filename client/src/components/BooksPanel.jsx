@@ -139,7 +139,7 @@ const BooksPanel = ({ setBookDetails }) => {
             className="form-input"
           />
           <input
-            type="text"
+            type="number"
             placeholder="Publish Year"
             value={bookDetailsState.publishYear}
             onChange={(event) =>
@@ -149,9 +149,11 @@ const BooksPanel = ({ setBookDetails }) => {
               })
             }
             className="form-input"
+            min="1900"
+            max={new Date().getFullYear()} // Set max year to current year
           />
           <input
-            type="text"
+            type="number"
             placeholder="Price"
             value={bookDetailsState.price}
             onChange={(event) =>
@@ -161,6 +163,8 @@ const BooksPanel = ({ setBookDetails }) => {
               })
             }
             className="form-input"
+            min="0" // Ensure price is a positive number
+            step="0.01" // Allow decimal values
           />
           <textarea
             placeholder="Description"
@@ -225,7 +229,7 @@ const BooksPanel = ({ setBookDetails }) => {
           className="form-input"
         />
         <input
-          type="text"
+          type="number"
           placeholder="Publish Year"
           value={bookDetailsState.publishYear}
           onChange={(event) =>
@@ -235,9 +239,11 @@ const BooksPanel = ({ setBookDetails }) => {
             })
           }
           className="form-input"
+          min="1900"
+          max={new Date().getFullYear()} // Set max year to current year
         />
         <input
-          type="text"
+          type="number"
           placeholder="Price"
           value={bookDetailsState.price}
           onChange={(event) =>
@@ -247,6 +253,8 @@ const BooksPanel = ({ setBookDetails }) => {
             })
           }
           className="form-input"
+          min="0"
+          step="0.01"
         />
         <textarea
           placeholder="Description"

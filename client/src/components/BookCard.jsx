@@ -11,7 +11,7 @@ const BookCard = ({ book }) => {
             ? `${book.description.substring(0, 100)}...`
             : book.description}
         </p>
-        <p className="bookCardPrice">Price: ${book.price}</p>
+        <p className="bookCardPrice">Price: BHD{book.price}</p>
       </div>
     </div>
   );

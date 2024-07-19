@@ -1,17 +1,23 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const User = require("../models/user");
+
+// Generate a JWT secret if it doesn't exist
+const generateJwtSecret = () => {
+  return process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex");
+};
 
 // Middleware to authenticate the user using JWT
 const authenticate = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
     console.log("Access denied. No token provided.");
-
     return res.status(401).send("Access denied. No token provided.");
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = generateJwtSecret();
+    const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();
   } catch (error) {
@@ -66,7 +72,7 @@ const authorizeAdmin = async (req, res, next) => {
 
 // Hash the password
 const hashPassword = async (password) => {
-  const saltRounds = 3;
+  const saltRounds = 10; // Increased salt rounds for better security
   return await bcrypt.hash(password, saltRounds);
 };
 
@@ -81,8 +87,10 @@ const checkUserExists = async (email) => {
   return !!user;
 };
 
+// Generate a JWT token
 const generateToken = (user) => {
-  return jwt.sign({ id: user._id, email: user.email }, token, {
+  const secret = generateJwtSecret();
+  return jwt.sign({ id: user._id, email: user.email }, secret, {
     expiresIn: "1h",
   });
 };

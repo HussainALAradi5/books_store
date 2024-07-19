@@ -103,8 +103,12 @@ export const checkUserActiveStatus = async () => {
 // Checks if the user is an admin
 export const checkUserIsAdmin = async () => {
   try {
-    const userDetails = await getUserDetails();
-    return userDetails.admin;
+    const token = getToken();
+    const response = await axios.get(`${API_URL}user/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log(response.data.admin);
+    return response.data.admin;
   } catch (error) {
     console.error("Error checking user admin status:", error.message);
     return false;

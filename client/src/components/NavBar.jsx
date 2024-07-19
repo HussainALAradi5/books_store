@@ -1,20 +1,32 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { isLoggedIn, getUserDetails, logout } from "../services/auth";
+import { isLoggedIn, checkUserIsAdmin, logout } from "../services/auth";
 
 const NavBar = ({ authenticated, setAuthenticated }) => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const loggedIn = await isLoggedIn();
-      setAuthenticated(loggedIn);
+      try {
+        const loggedIn = await isLoggedIn();
+        setAuthenticated(loggedIn);
 
-      if (loggedIn) {
-        // Fetch user data to check if user is an admin
-        const userData = await getUserDetails();
-        setIsAdmin(userData.admin);
+        if (loggedIn) {
+          const adminStatus = await checkUserIsAdmin();
+          setIsAdmin(adminStatus);
+        } else {
+          setIsAdmin(false); // Ensure isAdmin is set to false if not logged in
+        }
+      } catch (error) {
+        console.error(
+          "Error checking authentication or admin status:",
+          error.message
+        );
+        setIsAdmin(false); // Ensure isAdmin is set to false on error
+      } finally {
+        setLoading(false); // Set loading to false after checking
       }
     };
     checkAuth();
@@ -23,8 +35,13 @@ const NavBar = ({ authenticated, setAuthenticated }) => {
   const handleLogout = () => {
     logout();
     setAuthenticated(false);
+    setIsAdmin(false); // Ensure isAdmin is set to false on logout
     navigate("/");
   };
+
+  if (loading) {
+    return <div className="navbar">Loading...</div>;
+  }
 
   return (
     <nav className="navbar">
