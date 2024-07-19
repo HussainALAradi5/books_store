@@ -110,3 +110,18 @@ export const checkUserIsAdmin = async () => {
     return false;
   }
 };
+export const makeAdmin = async (email) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_URL}users/admin`,
+      { email },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("MakeAdmin response data:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error making user admin:", error.response.data);
+    throw error.response.data;
+  }
+};

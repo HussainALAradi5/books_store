@@ -1,9 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 
-const AdminPanel = () => {
+const AdminPanel = ({ setBookDetails }) => {
   const [searchName, setSearchName] = useState("");
-  const [bookDetails, setBookDetails] = useState({
+  const [bookDetailsState, setBookDetailsState] = useState({
     title: "",
     author: "",
     publishYear: "",
@@ -26,7 +26,8 @@ const AdminPanel = () => {
         }
       );
       setSelectedBook(response.data);
-      setBookDetails(response.data);
+      setBookDetailsState(response.data);
+      setBookDetails(response.data); // Set book details in parent component
     } catch (error) {
       console.error("Error searching book:", error.message);
       alert("Error searching book.");
@@ -38,13 +39,13 @@ const AdminPanel = () => {
       const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:3000/books/addToDatabase",
-        bookDetails,
+        bookDetailsState,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       alert("Book added successfully!");
-      setBookDetails({
+      setBookDetailsState({
         title: "",
         author: "",
         publishYear: "",
@@ -66,7 +67,7 @@ const AdminPanel = () => {
       });
       alert("Book removed successfully!");
       setSelectedBook(null);
-      setBookDetails({
+      setBookDetailsState({
         title: "",
         author: "",
         publishYear: "",
@@ -85,7 +86,7 @@ const AdminPanel = () => {
       const token = localStorage.getItem("token");
       await axios.put(
         `http://localhost:3000/books/${selectedBook._id}`,
-        bookDetails,
+        bookDetailsState,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -135,28 +136,34 @@ const AdminPanel = () => {
           <input
             type="text"
             placeholder="Title"
-            value={bookDetails.title}
+            value={bookDetailsState.title}
             onChange={(event) =>
-              setBookDetails({ ...bookDetails, title: event.target.value })
+              setBookDetailsState({
+                ...bookDetailsState,
+                title: event.target.value,
+              })
             }
             className="form-input"
           />
           <input
             type="text"
             placeholder="Author"
-            value={bookDetails.author}
+            value={bookDetailsState.author}
             onChange={(event) =>
-              setBookDetails({ ...bookDetails, author: event.target.value })
+              setBookDetailsState({
+                ...bookDetailsState,
+                author: event.target.value,
+              })
             }
             className="form-input"
           />
           <input
             type="text"
             placeholder="Publish Year"
-            value={bookDetails.publishYear}
+            value={bookDetailsState.publishYear}
             onChange={(event) =>
-              setBookDetails({
-                ...bookDetails,
+              setBookDetailsState({
+                ...bookDetailsState,
                 publishYear: event.target.value,
               })
             }
@@ -165,18 +172,21 @@ const AdminPanel = () => {
           <input
             type="text"
             placeholder="Price"
-            value={bookDetails.price}
+            value={bookDetailsState.price}
             onChange={(event) =>
-              setBookDetails({ ...bookDetails, price: event.target.value })
+              setBookDetailsState({
+                ...bookDetailsState,
+                price: event.target.value,
+              })
             }
             className="form-input"
           />
           <textarea
             placeholder="Description"
-            value={bookDetails.description}
+            value={bookDetailsState.description}
             onChange={(event) =>
-              setBookDetails({
-                ...bookDetails,
+              setBookDetailsState({
+                ...bookDetailsState,
                 description: event.target.value,
               })
             }
@@ -185,9 +195,12 @@ const AdminPanel = () => {
           <input
             type="text"
             placeholder="Poster URL"
-            value={bookDetails.poster}
+            value={bookDetailsState.poster}
             onChange={(event) =>
-              setBookDetails({ ...bookDetails, poster: event.target.value })
+              setBookDetailsState({
+                ...bookDetailsState,
+                poster: event.target.value,
+              })
             }
             className="form-input"
           />
@@ -209,73 +222,77 @@ const AdminPanel = () => {
         <input
           type="text"
           placeholder="Title"
-          value={bookDetails.title}
+          value={bookDetailsState.title}
           onChange={(event) =>
-            setBookDetails({ ...bookDetails, title: event.target.value })
+            setBookDetailsState({
+              ...bookDetailsState,
+              title: event.target.value,
+            })
           }
           className="form-input"
         />
         <input
           type="text"
           placeholder="Author"
-          value={bookDetails.author}
+          value={bookDetailsState.author}
           onChange={(event) =>
-            setBookDetails({ ...bookDetails, author: event.target.value })
+            setBookDetailsState({
+              ...bookDetailsState,
+              author: event.target.value,
+            })
           }
           className="form-input"
         />
         <input
           type="text"
           placeholder="Publish Year"
-          value={bookDetails.publishYear}
+          value={bookDetailsState.publishYear}
           onChange={(event) =>
-            setBookDetails({ ...bookDetails, publishYear: event.target.value })
+            setBookDetailsState({
+              ...bookDetailsState,
+              publishYear: event.target.value,
+            })
           }
           className="form-input"
         />
         <input
           type="text"
           placeholder="Price"
-          value={bookDetails.price}
+          value={bookDetailsState.price}
           onChange={(event) =>
-            setBookDetails({ ...bookDetails, price: event.target.value })
+            setBookDetailsState({
+              ...bookDetailsState,
+              price: event.target.value,
+            })
           }
           className="form-input"
         />
         <textarea
           placeholder="Description"
-          value={bookDetails.description}
+          value={bookDetailsState.description}
           onChange={(event) =>
-            setBookDetails({ ...bookDetails, description: event.target.value })
+            setBookDetailsState({
+              ...bookDetailsState,
+              description: event.target.value,
+            })
           }
           className="form-textarea"
         />
         <input
           type="text"
           placeholder="Poster URL"
-          value={bookDetails.poster}
+          value={bookDetailsState.poster}
           onChange={(event) =>
-            setBookDetails({ ...bookDetails, poster: event.target.value })
+            setBookDetailsState({
+              ...bookDetailsState,
+              poster: event.target.value,
+            })
           }
           className="form-input"
         />
         <button onClick={handleAddBook} className="action-button">
           Add Book
         </button>
-      </div>
-
-      <div className="admin-request-section">
-        <h2>Request Admin Status</h2>
-        <textarea
-          placeholder="Reason for admin request"
-          value={reason}
-          onChange={(event) => setReason(event.target.value)}
-          className="form-textarea"
-        />
-        <button onClick={handleRequestAdmin} className="action-button">
-          Submit Request
-        </button>
-        {requestStatus && <p className="request-status">{requestStatus}</p>}
       </div>
     </div>
   );
