@@ -3,6 +3,7 @@ const router = express.Router()
 const bookCtrl = require('../controllers/books')
 const ratingCtrl = require('../controllers/ratings')
 const commentCtrl = require('../controllers/comments')
+receiptCtrl = require('../controllers/receipt')
 const { authenticate, authorizeAdmin } = require('../middleware/auth')
 
 router.use(authenticate)
@@ -16,7 +17,7 @@ router.put('/comments/:id', commentCtrl.editComment)
 router.delete('/comments/:id', commentCtrl.removeComment)
 
 // Add book to user's collection and generate receipt
-router.post('/add', bookCtrl.addBookToUser) // Handles adding book and receipt generation
+router.post('/add', bookCtrl.addBookToUser, receiptCtrl.generateReceipt) // Handles adding book and receipt generation
 
 // Admin routes for managing books
 router.post('/addToDatabase', authorizeAdmin, bookCtrl.addBookToDatabase)

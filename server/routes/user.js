@@ -4,11 +4,10 @@ const userCtrl = require('../controllers/users')
 const receiptCtrl = require('../controllers/receipt')
 const { authenticate, authorizeAdmin } = require('../middleware/auth')
 
-router.use(authenticate)
-
 // User routes
 router.post('/register', userCtrl.register)
 router.post('/login', userCtrl.login)
+router.use(authenticate)
 router.put('/edit', userCtrl.edit)
 router.delete('/:id', authorizeAdmin, userCtrl.delete)
 router.get('/books', userCtrl.viewBooks)
