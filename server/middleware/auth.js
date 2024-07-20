@@ -72,7 +72,7 @@ const authorizeAdmin = async (req, res, next) => {
 
 // Hash the password
 const hashPassword = async (password) => {
-  const saltRounds = 10; // Increased salt rounds for better security
+  const saltRounds = 3;
   return await bcrypt.hash(password, saltRounds);
 };
 
