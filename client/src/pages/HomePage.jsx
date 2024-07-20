@@ -23,7 +23,7 @@ const HomePage = () => {
       <h1>All Books</h1>
       <div className="bookGrid">
         {books.map((book) => (
-          <Link to={`/book/${book._id}`} key={book._id}>
+          <Link to={`/books/${book._id}`} key={book._id}>
             <BookCard book={book} />
           </Link>
         ))}
