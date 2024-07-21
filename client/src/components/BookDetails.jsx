@@ -57,8 +57,9 @@ const BookDetails = () => {
         `${API_URL}/books/${id}/ratings`,
         config
       );
-      const { averageRating } = response.data;
-      setAverageRating(averageRating || 0); // Ensure it's a number
+      const { totalRatings, count } = response.data;
+      const averageRating = count > 0 ? totalRatings / count : 0;
+      setAverageRating(averageRating);
       console.log(`Fetched average rating: ${averageRating}`);
     } catch (error) {
       console.error("Error fetching average rating:", error.message);
@@ -122,9 +123,8 @@ const BookDetails = () => {
           <h2>Author: {book.author}</h2>
           <h3>Published Year: {book.publishYear}</h3>
           <p>{book.description}</p>
-          <p>Price: ${book.price}</p>
+          <p>Price: {book.price} BHD</p>
           <p>Average Rating: {(averageRating || 0).toFixed(2)}</p>{" "}
-          {/* Safeguard here */}
           {getToken() ? (
             <>
               <Comment bookId={id} onCommentAdded={handleCommentAdded} />
