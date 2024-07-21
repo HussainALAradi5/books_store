@@ -1,6 +1,8 @@
+// Rating.jsx
+
 import { useState } from "react";
 import axios from "axios";
-import { getToken } from "../services/auth";
+import { getToken, getUsername } from "../services/auth";
 
 const API_URL = "http://localhost:3000";
 
@@ -13,14 +15,19 @@ const Rating = ({ bookId, onRatingAdded }) => {
 
     try {
       const token = getToken();
-      if (!token) throw new Error("Not authenticated.");
+      const username = getUsername(); // Retrieve username
+
+      if (!token || !username) throw new Error("Not authenticated.");
+
+      console.log(`Submitting rating for book ID ${bookId}: ${rating}`);
 
       await axios.post(
         `${API_URL}/books/${bookId}/ratings`,
-        { rating },
+        { rating, username }, // Include username in request payload
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      console.log("Rating submitted successfully.");
       setRating(0);
       onRatingAdded(); // Notify parent component to update average rating
     } catch (error) {

@@ -14,7 +14,11 @@ const setToken = (token) => {
   localStorage.setItem("token", token);
   console.log("Token set:", token);
 };
-
+const getUsername = () => {
+  const username = localStorage.getItem("username");
+  console.log("Username retrieved:", username);
+  return username;
+};
 // Utility to remove the JWT token from localStorage
 const removeToken = () => {
   localStorage.removeItem("token");
@@ -39,6 +43,7 @@ const login = async (email, password) => {
       password,
     });
     setToken(response.data.token);
+    localStorage.setItem("username", response.data.username); // Store username
     console.log("Login successful:", response.data);
     return response.data;
   } catch (error) {
@@ -179,4 +184,5 @@ export {
   checkUserActiveStatus,
   checkUserIsAdmin,
   makeAdmin,
+  getUsername,
 };

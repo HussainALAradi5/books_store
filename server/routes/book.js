@@ -9,11 +9,12 @@ const { authenticate, authorizeAdmin } = require("../middleware/auth");
 router.get("/", bookCtrl.getAllBooks);
 router.get("/:id", bookCtrl.getBookById);
 router.get("/:id/ratings", ratingCtrl.showTotalRating);
+router.get("/:id/comments", commentCtrl.getCommentsByBookId);
+
 router.use(authenticate);
 router.get("/findByName", bookCtrl.findBookByName);
 
 router.post("/:id/ratings", ratingCtrl.rateThisBook);
-
 router.post("/:id/comments", commentCtrl.addComment);
 router.put("/comments/:id", commentCtrl.editComment);
 router.delete("/comments/:id", commentCtrl.removeComment);

@@ -7,73 +7,108 @@ import { getToken } from "../services/auth";
 
 const API_URL = "http://localhost:3000";
 
+const getAuthHeaders = () => {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const BookDetails = () => {
   const { id } = useParams();
   const [book, setBook] = useState(null);
   const [comments, setComments] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Fetch book details
+  const fetchBookDetails = async () => {
+    try {
+      const config = { headers: getAuthHeaders() };
+      const response = await axios.get(`${API_URL}/books/${id}`, config);
+      setBook(response.data);
+      console.log(`Fetched book details: ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      console.error("Error fetching book details:", error.message);
+      setError("Error fetching book details.");
+    }
+  };
+
+  // Fetch comments
+  const fetchComments = async () => {
+    try {
+      const config = { headers: getAuthHeaders() };
+      const response = await axios.get(
+        `${API_URL}/books/${id}/comments`,
+        config
+      );
+      setComments(response.data);
+      console.log(`Fetched comments: ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      console.error("Error fetching comments:", error.message);
+      setError("Error fetching comments.");
+    }
+  };
+
+  // Fetch average rating
+  const fetchAverageRating = async () => {
+    try {
+      const config = { headers: getAuthHeaders() };
+      const response = await axios.get(
+        `${API_URL}/books/${id}/ratings`,
+        config
+      );
+      const { averageRating } = response.data;
+      setAverageRating(averageRating || 0); // Ensure it's a number
+      console.log(`Fetched average rating: ${averageRating}`);
+    } catch (error) {
+      console.error("Error fetching average rating:", error.message);
+      setError("Error fetching average rating.");
+    }
+  };
+
+  // Handle adding a new comment
+  const handleCommentAdded = async (newCommentText) => {
+    try {
+      const config = { headers: getAuthHeaders() };
+      await axios.post(
+        `${API_URL}/books/${id}/comments`,
+        { text: newCommentText },
+        config
+      );
+      await fetchComments(); // Re-fetch updated comments
+    } catch (error) {
+      console.error("Error adding comment:", error.message);
+      setError("Error adding comment.");
+    }
+  };
+
+  // Handle adding a new rating
+  const handleRatingAdded = async (newRating) => {
+    try {
+      const config = { headers: getAuthHeaders() };
+      await axios.post(
+        `${API_URL}/books/${id}/ratings`,
+        { rating: newRating },
+        config
+      );
+      await fetchAverageRating(); // Re-fetch updated average rating
+    } catch (error) {
+      console.error("Error adding rating:", error.message);
+      setError("Error adding rating.");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      try {
-        // Fetch book details
-        const bookResponse = await axios.get(`${API_URL}/books/${id}`);
-        setBook(bookResponse.data);
-
-        // Fetch comments
-        const commentsResponse = await axios.get(
-          `${API_URL}/books/${id}/comments`
-        );
-        setComments(commentsResponse.data);
-
-        // Fetch average rating
-        const ratingResponse = await axios.get(
-          `${API_URL}/books/${id}/ratings`
-        );
-        const { totalRatings, count } = ratingResponse.data;
-        const avgRating = count > 0 ? totalRatings / count : 0;
-        setAverageRating(avgRating);
-      } catch (error) {
-        console.error(
-          "Error fetching book details, comments, or ratings:",
-          error.message
-        );
-        setError("Error fetching book details, comments, or ratings.");
-      } finally {
-        setLoading(false);
-      }
+      await fetchBookDetails();
+      await fetchComments();
+      await fetchAverageRating();
+      setLoading(false);
     };
 
     fetchData();
   }, [id]);
-
-  const handleCommentAdded = async () => {
-    try {
-      // Fetch updated comments only
-      const response = await axios.get(`${API_URL}/books/${id}/comments`);
-      setComments(response.data);
-    } catch (error) {
-      console.error("Error updating comments:", error.message);
-      setError("Error updating comments.");
-    }
-  };
-
-  const handleRatingAdded = async () => {
-    try {
-      // Re-fetch average rating after adding a new rating
-      const response = await axios.get(`${API_URL}/books/${id}/ratings`);
-      const { totalRatings, count } = response.data;
-      const avgRating = count > 0 ? totalRatings / count : 0;
-      setAverageRating(avgRating);
-    } catch (error) {
-      console.error("Error updating average rating:", error.message);
-      setError("Error updating average rating.");
-    }
-  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -88,7 +123,8 @@ const BookDetails = () => {
           <h3>Published Year: {book.publishYear}</h3>
           <p>{book.description}</p>
           <p>Price: ${book.price}</p>
-          <p>Average Rating: {averageRating.toFixed(2)}</p>
+          <p>Average Rating: {(averageRating || 0).toFixed(2)}</p>{" "}
+          {/* Safeguard here */}
           {getToken() ? (
             <>
               <Comment bookId={id} onCommentAdded={handleCommentAdded} />
@@ -101,7 +137,7 @@ const BookDetails = () => {
                       <li key={comment._id}>
                         <p>{comment.text}</p>
                         <p>
-                          <small>{comment.author}</small>
+                          <small>{comment.userId}</small>
                         </p>
                       </li>
                     ))}
@@ -114,7 +150,6 @@ const BookDetails = () => {
           ) : (
             <p>You need to be logged in to comment or rate this book.</p>
           )}
-          {message && <p>{message}</p>}
         </>
       ) : (
         <p>No book details available.</p>

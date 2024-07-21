@@ -100,9 +100,18 @@ const removeComment = async (req, res) => {
     res.status(500).end(); // Internal Server Error
   }
 };
-
+const getCommentsByBookId = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+    const comments = await Comment.find({ bookId }); // Replace with actual DB query
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching comments." });
+  }
+};
 module.exports = {
   addComment,
   editComment,
   removeComment,
+  getCommentsByBookId,
 };
