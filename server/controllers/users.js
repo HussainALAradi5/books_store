@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const AdminRequest = require("../models/adminRequest");
 const {
   hashPassword,
   comparePassword,
@@ -210,6 +211,35 @@ const rejectRequest = async (req, res) => {
     res.status(400).send("Error rejecting admin request.");
   }
 };
+const requestAdmin = async (req, res) => {
+  const { reason } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+
+    if (user.requestAdmin) {
+      return res.status(400).send("Admin request already pending.");
+    }
+
+    const adminRequest = new AdminRequest({
+      userId,
+      reason,
+    });
+
+    user.requestAdmin = true;
+    await user.save();
+    await adminRequest.save();
+
+    res.status(200).send("Admin request sent successfully.");
+  } catch (error) {
+    console.error("Error sending admin request:", error.message);
+    res.status(400).send("Error sending admin request.");
+  }
+};
 module.exports = {
   register,
   login,
@@ -221,4 +251,5 @@ module.exports = {
   getRequests,
   acceptRequest,
   rejectRequest,
+  requestAdmin,
 };

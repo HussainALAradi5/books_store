@@ -9,7 +9,7 @@ const RequestAdmin = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:3000/users/requestAdmin",
+        "http://localhost:3000/user/requestAdmin",
         { reason },
         {
           headers: { Authorization: `Bearer ${token}` },

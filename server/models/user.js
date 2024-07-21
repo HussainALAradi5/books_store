@@ -9,6 +9,7 @@ const userSchema = new Schema(
     receipts: [{ type: Schema.Types.ObjectId, ref: "Receipt" }],
     isActive: { type: Boolean, default: true },
     admin: { type: Boolean, default: false },
+    requestAdmin: { type: Boolean, default: false },
     books: [{ type: Schema.Types.ObjectId, ref: "Book" }],
   },
   {
