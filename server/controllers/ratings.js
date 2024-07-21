@@ -5,19 +5,14 @@ const User = require("../models/user");
 // Add a rating to a book
 const rateThisBook = async (req, res) => {
   const { id } = req.params; // Book ID from URL
-  const { rating, username } = req.body; // Rating and username from request body
+  const { rating } = req.body; // Rating from request body
+  const userId = req.user.id; // Extract user ID from authenticated request
 
   if (!rating || rating < 1 || rating > 5) {
     return res.status(400).json({ error: "Invalid rating value" });
   }
 
   try {
-    // Find user by username
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
     // Find book by ID
     const book = await Book.findById(id);
     if (!book) {
@@ -26,7 +21,7 @@ const rateThisBook = async (req, res) => {
 
     // Check if user has already rated this book
     const existingRating = await Rating.findOne({
-      user: user._id,
+      user: userId,
       book: book._id,
     });
     if (existingRating) {
@@ -38,15 +33,12 @@ const rateThisBook = async (req, res) => {
 
     // Create and save the new rating
     const newRating = new Rating({
-      user: user._id,
+      user: userId,
       book: book._id,
       rating,
     });
 
     await newRating.save();
-
-    // Optionally: Calculate and return the updated average rating for the book
-    // ...
 
     res.status(201).json({ message: "Rating added successfully" });
   } catch (error) {

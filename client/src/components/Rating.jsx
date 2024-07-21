@@ -12,27 +12,27 @@ const Rating = ({ bookId, onRatingAdded }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const token = getToken(); // Ensure token is retrieved
+
+    if (!token) {
+      console.error("Not authenticated.");
+      return;
+    }
 
     try {
-      const token = getToken();
-      const username = getUsername(); // Retrieve username
-
-      if (!token || !username) throw new Error("Not authenticated.");
-
-      console.log(`Submitting rating for book ID ${bookId}: ${rating}`);
-
       await axios.post(
-        `${API_URL}/books/${bookId}/ratings`,
-        { rating, username }, // Include username in request payload
-        { headers: { Authorization: `Bearer ${token}` } }
+        `http://localhost:3000/books/${bookId}/ratings`,
+        { rating },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-
-      console.log("Rating submitted successfully.");
-      setRating(0);
-      onRatingAdded(); // Notify parent component to update average rating
+      console.log("Rating added successfully");
     } catch (error) {
-      console.error("Error adding rating:", error.message);
-      setError("Error adding rating.");
+      console.error(
+        "Error adding rating:",
+        error.response?.data?.message || error.message
+      );
     }
   };
 
