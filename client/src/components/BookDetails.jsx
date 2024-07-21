@@ -17,42 +17,38 @@ const BookDetails = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchBook = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/books/${id}`);
-        setBook(response.data);
-      } catch (error) {
-        console.error("Error fetching book details:", error.message);
-        setError("Error fetching book details.");
-      }
-    };
+        // Fetch book details
+        const bookResponse = await axios.get(`${API_URL}/books/${id}`);
+        setBook(bookResponse.data);
 
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/books/${id}/comments`);
-        setComments(response.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error.message);
-        setError("Error fetching comments.");
-      }
-    };
+        // Fetch comments
+        const commentsResponse = await axios.get(
+          `${API_URL}/books/${id}/comments`
+        );
+        setComments(commentsResponse.data);
 
-    const fetchAverageRating = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/books/${id}/ratings`);
-        const { totalRatings, count } = response.data;
+        // Fetch average rating
+        const ratingResponse = await axios.get(
+          `${API_URL}/books/${id}/ratings`
+        );
+        const { totalRatings, count } = ratingResponse.data;
         const avgRating = count > 0 ? totalRatings / count : 0;
         setAverageRating(avgRating);
       } catch (error) {
-        console.error("Error fetching average rating:", error.message);
-        setError("Error fetching average rating.");
+        console.error(
+          "Error fetching book details, comments, or ratings:",
+          error.message
+        );
+        setError("Error fetching book details, comments, or ratings.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchBook();
-    fetchComments();
-    fetchAverageRating();
-    setLoading(false);
+    fetchData();
   }, [id]);
 
   const handleCommentAdded = async () => {

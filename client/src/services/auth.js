@@ -3,50 +3,70 @@ import axios from "axios";
 const API_URL = "http://localhost:3000/";
 
 // Utility to get the JWT token from localStorage
-export const getToken = () => localStorage.getItem("token");
+export const getToken = () => {
+  const token = localStorage.getItem("token");
+  console.log("Token retrieved:", token);
+  return token;
+};
 
 // Utility to set the JWT token in localStorage
-const setToken = (token) => localStorage.setItem("token", token);
+const setToken = (token) => {
+  localStorage.setItem("token", token);
+  console.log("Token set:", token);
+};
 
 // Utility to remove the JWT token from localStorage
-const removeToken = () => localStorage.removeItem("token");
+const removeToken = () => {
+  localStorage.removeItem("token");
+  console.log("Token removed");
+};
+
+// Handles API errors
+const handleError = (error) => {
+  const message = error.response
+    ? error.response.data.message
+    : "An unexpected error occurred.";
+  console.error("API error:", message);
+  return message;
+};
 
 // Handles user login
-export const login = async (email, password) => {
+const login = async (email, password) => {
+  console.log("Attempting to login with email:", email);
   try {
     const response = await axios.post(`${API_URL}user/login`, {
       email,
       password,
     });
     setToken(response.data.token);
+    console.log("Login successful:", response.data);
     return response.data;
   } catch (error) {
-    const errorMessage = error.response
-      ? error.response.data.message
-      : "Error logging in.";
-    throw new Error(errorMessage);
+    console.error("Login error:", handleError(error));
+    throw new Error(handleError(error));
   }
 };
 
 // Handles user registration
-export const register = async (username, email, password) => {
+const register = async (username, email, password) => {
+  console.log("Attempting to register with username:", username);
   try {
     const response = await axios.post(`${API_URL}user/register`, {
       username,
       email,
       password,
     });
+    console.log("Registration successful:", response.data);
     return response.data;
   } catch (error) {
-    const errorMessage = error.response
-      ? error.response.data.message
-      : "Error registering.";
-    throw new Error(errorMessage);
+    console.error("Registration error:", handleError(error));
+    throw new Error(handleError(error));
   }
 };
 
 // Checks if the user is logged in
-export const isLoggedIn = async () => {
+const isLoggedIn = async () => {
+  console.log("Checking if user is logged in");
   try {
     const token = getToken();
     if (!token) return false;
@@ -54,67 +74,85 @@ export const isLoggedIn = async () => {
     const response = await axios.get(`${API_URL}user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data.loggedIn === true;
+    const loggedIn = response.data.loggedIn === true;
+    console.log("User logged in status:", loggedIn);
+    return loggedIn;
   } catch (error) {
-    console.error("Error checking login status:", error.message);
+    console.error("Error checking login status:", handleError(error));
     return false;
   }
 };
 
 // Logs out the user
-export const logout = () => removeToken();
+const logout = () => {
+  removeToken();
+  console.log("User logged out");
+};
 
 // Fetches user details
-export const getUserDetails = async () => {
+const getUserDetails = async () => {
+  console.log("Fetching user details");
   try {
     const token = getToken();
     const response = await axios.get(`${API_URL}user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("User details fetched:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching user details:", error.message);
+    console.error("Error fetching user details:", handleError(error));
     throw new Error("Error fetching user details.");
   }
 };
 
 // Checks if the user owns a specific book
-export const checkUserOwnsBook = async (bookId) => {
+const checkUserOwnsBook = async (bookId) => {
+  console.log("Checking if user owns book with ID:", bookId);
   try {
     const userDetails = await getUserDetails();
-    return userDetails.books.includes(bookId);
+    const ownsBook = userDetails.books.includes(bookId);
+    console.log("User owns book:", ownsBook);
+    return ownsBook;
   } catch (error) {
-    console.error("Error checking book ownership:", error.message);
+    console.error("Error checking book ownership:", handleError(error));
     return false;
   }
 };
 
 // Checks if the user is active
-export const checkUserActiveStatus = async () => {
+const checkUserActiveStatus = async () => {
+  console.log("Checking if user is active");
   try {
     const userDetails = await getUserDetails();
-    return userDetails.isActive;
+    const isActive = userDetails.isActive;
+    console.log("User active status:", isActive);
+    return isActive;
   } catch (error) {
-    console.error("Error checking user active status:", error.message);
+    console.error("Error checking user active status:", handleError(error));
     return false;
   }
 };
 
 // Checks if the user is an admin
-export const checkUserIsAdmin = async () => {
+const checkUserIsAdmin = async () => {
+  console.log("Checking if user is an admin");
   try {
     const token = getToken();
     const response = await axios.get(`${API_URL}user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(response.data.admin);
-    return response.data.admin;
+    const isAdmin = response.data.admin;
+    console.log("User admin status:", isAdmin);
+    return isAdmin;
   } catch (error) {
-    console.error("Error checking user admin status:", error.message);
+    console.error("Error checking user admin status:", handleError(error));
     return false;
   }
 };
-export const makeAdmin = async (email) => {
+
+// Makes a user an admin
+const makeAdmin = async (email) => {
+  console.log("Attempting to make user admin with email:", email);
   try {
     const token = getToken();
     const response = await axios.post(
@@ -125,7 +163,20 @@ export const makeAdmin = async (email) => {
     console.log("MakeAdmin response data:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error making user admin:", error.response.data);
-    throw error.response.data;
+    console.error("Error making user admin:", handleError(error));
+    throw new Error(handleError(error));
   }
+};
+
+// Export all functions at the end
+export {
+  login,
+  register,
+  isLoggedIn,
+  logout,
+  getUserDetails,
+  checkUserOwnsBook,
+  checkUserActiveStatus,
+  checkUserIsAdmin,
+  makeAdmin,
 };

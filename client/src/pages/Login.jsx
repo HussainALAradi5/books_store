@@ -7,6 +7,7 @@ const Login = ({ setAuthenticated }) => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  console.log(localStorage.getItem("token"));
 
   const handleSubmit = async (event) => {
     event.preventDefault();

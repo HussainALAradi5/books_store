@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { getToken, getUserDetails } from "../services/auth";
 import AdminPanel from "../components/AdminPanel";
 import RequestAdmin from "../components/RequestAdmin";
+
+const API_URL = "http://localhost:3000";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -9,6 +12,14 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [bookDetails, setBookDetails] = useState(null);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    newEmail: "",
+  });
+  const [formError, setFormError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -20,9 +31,18 @@ const Profile = () => {
           return;
         }
 
-        const userDetails = await getUserDetails();
+        const response = await axios.get(`${API_URL}/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const userDetails = response.data;
         setUser(userDetails);
         setIsAdmin(userDetails.admin);
+        setFormData({
+          username: userDetails.username,
+          email: userDetails.email,
+          password: "",
+          newEmail: userDetails.email,
+        });
       } catch (error) {
         console.error("Error fetching user details:", error.message);
         setError("Error fetching user details.");
@@ -34,9 +54,83 @@ const Profile = () => {
     fetchUserDetails();
   }, []);
 
-  const handleSetBookDetails = (details) => {
-    setBookDetails(details);
-    console.log("Book details set:", details);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const updateUserDetails = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setFormError("You must be logged in to update your details.");
+        return;
+      }
+
+      await axios.put(
+        `${API_URL}/user/edit`,
+        {
+          email: user.email, // Current email to identify user
+          username: formData.username,
+          password: formData.password,
+          newEmail: formData.newEmail,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUser({
+        ...user,
+        username: formData.username,
+        email: formData.newEmail,
+      });
+      setFormError("");
+      alert("User details updated successfully.");
+    } catch (error) {
+      console.error("Error updating user details:", error.message);
+      setFormError("Error updating user details.");
+    }
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    updateUserDetails();
+  };
+
+  const deleteUserAccount = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setDeleteError("You must be logged in to delete your account.");
+        return;
+      }
+
+      await axios.delete(`${API_URL}/user/${user._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Handle successful account deletion
+      setUser(null);
+      alert("Your account has been deleted.");
+    } catch (error) {
+      console.error("Error deleting user account:", error.message);
+      setDeleteError("Error deleting user account.");
+    }
+  };
+
+  const handleDelete = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      deleteUserAccount();
+    }
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -53,6 +147,9 @@ const Profile = () => {
           <div className="profile-body">
             <div className="profile-info">
               <p>
+                <strong>Username:</strong> {user.username}
+              </p>
+              <p>
                 <strong>Email:</strong> {user.email}
               </p>
               <p>
@@ -62,21 +159,54 @@ const Profile = () => {
                 <strong>Admin:</strong> {user.admin ? "Yes" : "No"}
               </p>
             </div>
-            <div className="profile-books">
-              <h2>Books</h2>
-              {user.books && user.books.length > 0 ? (
-                <ul>
-                  {user.books.map((book) => (
-                    <li key={book._id}>{book.title}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No books owned.</p>
-              )}
-            </div>
+
             {!isAdmin && <RequestAdmin />}
+            {isAdmin && <AdminPanel setBookDetails={handleSetBookDetails} />}
+
+            <form onSubmit={handleFormSubmit} className="update-form">
+              <h2>Update Your Details</h2>
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">New Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="newEmail"
+                  value={formData.newEmail}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              {formError && <p className="error-message">{formError}</p>}
+              <button type="submit">Update</button>
+            </form>
+
+            {deleteError && <p className="error-message">{deleteError}</p>}
+            <button onClick={handleDelete} className="delete-button">
+              Delete Account
+            </button>
           </div>
-          {isAdmin && <AdminPanel setBookDetails={handleSetBookDetails} />}
         </div>
       ) : (
         <p>No user information available.</p>
