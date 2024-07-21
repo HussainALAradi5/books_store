@@ -78,6 +78,14 @@ const showTotalRating = async (req, res) => {
   console.log(`Fetching total rating for book ID ${id}`);
 
   try {
+    // Check if the book exists
+    const book = await Book.findById(id);
+    if (!book) {
+      console.error("Book not found.");
+      return res.status(404).send("Book not found.");
+    }
+
+    // Get total ratings and count using the helper function
     const { totalRatings, count } = await getTotalRatingData(id);
 
     res.status(200).json({ totalRatings, count });
@@ -94,7 +102,10 @@ const showAverageRating = async (req, res) => {
   console.log(`Fetching average rating for book ID ${id}`);
 
   try {
+    // Get total ratings and count using the helper function
     const { totalRatings, count } = await getTotalRatingData(id);
+
+    // Calculate average rating
     const averageRating = count > 0 ? totalRatings / count : 0; // Handle division by zero
 
     console.log(`Average rating: ${averageRating}`);
