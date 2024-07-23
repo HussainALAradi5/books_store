@@ -8,7 +8,7 @@ const { authenticate, authorizeAdmin } = require("../middleware/auth");
 
 router.get("/", bookCtrl.getAllBooks);
 router.get("/:id", bookCtrl.getBookById);
-router.get("/:id/ratings", ratingCtrl.showTotalRating);
+router.get("/:id/ratings", ratingCtrl.showAverageRating);
 router.get("/:id/comments", commentCtrl.getCommentsByBookId);
 
 router.use(authenticate);

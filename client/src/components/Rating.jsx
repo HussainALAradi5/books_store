@@ -1,12 +1,10 @@
-// Rating.jsx
-
 import { useState } from "react";
 import axios from "axios";
-import { getToken, getUsername } from "../services/auth";
+import { getToken } from "../services/auth";
 
 const API_URL = "http://localhost:3000";
 
-const Rating = ({ bookId, onRatingAdded }) => {
+const Rating = ({ bookId, onRatingAdded, userHasBook }) => {
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
 
@@ -21,20 +19,26 @@ const Rating = ({ bookId, onRatingAdded }) => {
 
     try {
       await axios.post(
-        `http://localhost:3000/books/${bookId}/ratings`,
+        `${API_URL}/books/${bookId}/ratings`,
         { rating },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       console.log("Rating added successfully");
+      onRatingAdded(rating); // Notify parent of the new rating
     } catch (error) {
       console.error(
         "Error adding rating:",
         error.response?.data?.message || error.message
       );
+      setError("Error adding rating.");
     }
   };
+
+  if (!userHasBook) {
+    return <p>You must own this book to rate it.</p>;
+  }
 
   return (
     <div className="rating">
