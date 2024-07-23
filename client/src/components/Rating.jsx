@@ -4,7 +4,7 @@ import { getToken } from "../services/auth";
 
 const API_URL = "http://localhost:3000";
 
-const Rating = ({ bookId, onRatingAdded, userHasBook }) => {
+const Rating = ({ bookId, onRatingAdded, userHasBook, userHasRated }) => {
   const [rating, setRating] = useState(0);
   const [error, setError] = useState("");
 
@@ -21,11 +21,13 @@ const Rating = ({ bookId, onRatingAdded, userHasBook }) => {
       await axios.post(
         `${API_URL}/books/${bookId}/ratings`,
         { rating },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log("Rating added successfully");
+
+      // Store rating status in localStorage
+      localStorage.setItem(`userRatedBook_${bookId}`, true);
+
       onRatingAdded(rating); // Notify parent of the new rating
     } catch (error) {
       console.error(
@@ -38,6 +40,10 @@ const Rating = ({ bookId, onRatingAdded, userHasBook }) => {
 
   if (!userHasBook) {
     return <p>You must own this book to rate it.</p>;
+  }
+
+  if (userHasRated) {
+    return <p>You have already rated this book.</p>;
   }
 
   return (

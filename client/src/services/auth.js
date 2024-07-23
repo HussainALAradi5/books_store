@@ -109,7 +109,24 @@ const getUserDetails = async () => {
     throw new Error("Error fetching user details.");
   }
 };
+const hasUserRatedBook = async (bookId) => {
+  console.log("Checking if user has rated book with ID:", bookId);
+  try {
+    const token = getToken();
+    if (!token) throw new Error("User not authenticated");
 
+    const response = await axios.get(`${API_URL}/books/${bookId}/user-rating`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const userRating = response.data.rating;
+    console.log("User rating:", userRating);
+    return userRating !== undefined; // Return true if user has a rating, false otherwise
+  } catch (error) {
+    console.error("Error checking user book rating:", handleError(error));
+    return false;
+  }
+};
 // Checks if the user owns a specific book
 const checkUserOwnsBook = async (bookId) => {
   console.log("Checking if user owns book with ID:", bookId);
@@ -185,4 +202,5 @@ export {
   checkUserIsAdmin,
   makeAdmin,
   getUsername,
+  hasUserRatedBook,
 };

@@ -21,6 +21,7 @@ const BookDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [userHasBook, setUserHasBook] = useState(false);
+  const [userHasRated, setUserHasRated] = useState(false); // Track rating status
 
   // Fetch book details
   const fetchBookDetails = async () => {
@@ -80,6 +81,12 @@ const BookDetails = () => {
     }
   };
 
+  // Check if the user has rated the book
+  const checkRatingStatus = () => {
+    const hasRated = localStorage.getItem(`userRatedBook_${id}`);
+    setUserHasRated(hasRated === "true");
+  };
+
   // Handle adding a new comment
   const handleCommentAdded = async (newCommentText) => {
     try {
@@ -106,6 +113,7 @@ const BookDetails = () => {
         config
       );
       await fetchAverageRating(); // Re-fetch updated average rating
+      localStorage.setItem(`userRatedBook_${id}`, true); // Update localStorage
     } catch (error) {
       console.error("Error adding rating:", error.message);
       setError("Error adding rating.");
@@ -118,7 +126,10 @@ const BookDetails = () => {
       await fetchBookDetails();
       await fetchComments();
       await fetchAverageRating();
-      if (getToken()) await checkOwnership();
+      if (getToken()) {
+        await checkOwnership();
+        checkRatingStatus(); // Check rating status from localStorage
+      }
       setLoading(false);
     };
 
@@ -146,7 +157,8 @@ const BookDetails = () => {
                 <Rating
                   bookId={id}
                   onRatingAdded={handleRatingAdded}
-                  userHasBook={userHasBook} // Pass userHasBook to Rating
+                  userHasBook={userHasBook}
+                  userHasRated={userHasRated} // Pass userHasRated to Rating
                 />
                 <div className="commentsSection">
                   <h2>Comments</h2>
