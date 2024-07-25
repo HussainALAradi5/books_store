@@ -1,13 +1,22 @@
 const Comment = require("../models/comment");
-
+const Book = require("../models/book");
+const User = require("../models/user");
 // Add Comment
+
 const addComment = async (req, res) => {
   const { id: bookId } = req.params; // Extract book ID from URL
   const { comment } = req.body; // Extract comment from request body
-  const userId = req.user._id; // Extract user ID from authenticated request
-  console.log("comment:", comment);
+  const userId = req.user.id; // Extract user ID from authenticated request
+
+  console.log("Received comment:", comment);
+  console.log("User ID:", userId);
+
   if (!comment) {
     return res.status(400).json({ error: "Comment text is required" });
+  }
+
+  if (!userId) {
+    return res.status(401).json({ error: "User not authenticated" });
   }
 
   try {
@@ -19,7 +28,7 @@ const addComment = async (req, res) => {
 
     // Create and save the new comment
     const newComment = new Comment({
-      userId,
+      userId, // Ensure userId is properly assigned
       bookId: book._id,
       comment,
     });
@@ -27,7 +36,6 @@ const addComment = async (req, res) => {
     await newComment.save();
 
     // Optionally, you can add the new comment to the Book's comments array
-    // (if you have a comments array in your Book schema)
     book.comments.push(newComment._id); // Assuming book schema has a comments array
     await book.save();
 
@@ -39,7 +47,6 @@ const addComment = async (req, res) => {
     res.status(500).json({ error: "Failed to add comment" });
   }
 };
-
 // Edit Comment
 const editComment = async (req, res) => {
   const { id } = req.params;
