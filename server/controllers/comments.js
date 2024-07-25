@@ -1,15 +1,11 @@
 const Comment = require("../models/comment");
 const Book = require("../models/book");
-const User = require("../models/user");
 // Add Comment
 
 const addComment = async (req, res) => {
   const { id: bookId } = req.params; // Extract book ID from URL
   const { comment } = req.body; // Extract comment from request body
   const userId = req.user.id; // Extract user ID from authenticated request
-
-  console.log("Received comment:", comment);
-  console.log("User ID:", userId);
 
   if (!comment) {
     return res.status(400).json({ error: "Comment text is required" });
@@ -49,14 +45,19 @@ const addComment = async (req, res) => {
 };
 // Edit Comment
 const editComment = async (req, res) => {
-  const { id } = req.params;
-  const { comment } = req.body;
+  const { id } = req.params; // Comment ID
+  const { comment } = req.body; // New comment text
+  const userId = req.user.id; // Extract user ID from authenticated request
+
+  if (!comment) {
+    return res.status(400).json({ error: "Comment text is required" });
+  }
+
+  if (!userId) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
 
   try {
-    if (!req.user || !req.user.isActive) {
-      return res.status(401).json({ message: "Unauthorized" }); // Unauthorized
-    }
-
     let existingComment = await Comment.findById(id);
 
     if (!existingComment) {
@@ -64,7 +65,7 @@ const editComment = async (req, res) => {
     }
 
     if (
-      existingComment.userId.toString() !== req.user._id.toString() &&
+      existingComment.userId.toString() !== userId.toString() &&
       !req.user.admin
     ) {
       return res.status(403).json({ message: "Forbidden" }); // Forbidden
@@ -73,7 +74,12 @@ const editComment = async (req, res) => {
     existingComment.comment = comment;
     await existingComment.save();
 
-    res.status(200).json(existingComment); // OK
+    res
+      .status(200)
+      .json({
+        message: "Comment edited successfully",
+        comment: existingComment,
+      }); // OK
   } catch (error) {
     console.error("Error editing comment:", error);
     res.status(500).json({ message: "Error editing comment" }); // Internal Server Error
@@ -82,13 +88,14 @@ const editComment = async (req, res) => {
 
 // Remove Comment
 const removeComment = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // Comment ID
+  const userId = req.user.id; // Extract user ID from authenticated request
+
+  if (!userId) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
 
   try {
-    if (!req.user || !req.user.isActive) {
-      return res.status(401).json({ message: "Unauthorized" }); // Unauthorized
-    }
-
     let existingComment = await Comment.findById(id);
 
     if (!existingComment) {
@@ -96,7 +103,7 @@ const removeComment = async (req, res) => {
     }
 
     if (
-      existingComment.userId.toString() !== req.user._id.toString() &&
+      existingComment.userId.toString() !== userId.toString() &&
       !req.user.admin
     ) {
       return res.status(403).json({ message: "Forbidden" }); // Forbidden
@@ -104,7 +111,7 @@ const removeComment = async (req, res) => {
 
     await existingComment.remove();
 
-    res.status(200).json({ message: "Comment removed" }); // OK
+    res.status(200).json({ message: "Comment removed successfully" }); // OK
   } catch (error) {
     console.error("Error deleting comment:", error);
     res.status(500).json({ message: "Error deleting comment" }); // Internal Server Error

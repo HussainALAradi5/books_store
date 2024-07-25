@@ -16,6 +16,7 @@ const BookDetails = () => {
   const [error, setError] = useState("");
   const [userHasBook, setUserHasBook] = useState(false);
   const [userHasRated, setUserHasRated] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Fetch book details
   const fetchBookDetails = async () => {
@@ -76,12 +77,14 @@ const BookDetails = () => {
     try {
       const token = getToken();
       if (token) {
+        setIsLoggedIn(true); // Set logged-in status
         const response = await axios.get(`${API_URL}/books/${id}/user-rating`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userRating = response.data.rating;
         setUserHasRated(userRating !== null);
       } else {
+        setIsLoggedIn(false); // Not logged in
         setUserHasRated(false);
       }
     } catch (error) {
@@ -90,7 +93,12 @@ const BookDetails = () => {
     }
   };
 
+  // Handle add comment
   const handleAddComment = async (commentText) => {
+    if (!isLoggedIn) {
+      alert("You must be logged in to add a comment.");
+      return;
+    }
     try {
       const token = getToken();
       const response = await axios.post(
@@ -107,7 +115,12 @@ const BookDetails = () => {
     }
   };
 
+  // Handle edit comment
   const handleEditComment = async (commentId, newCommentText) => {
+    if (!isLoggedIn) {
+      alert("You must be logged in to edit a comment.");
+      return;
+    }
     try {
       const token = getToken();
       await axios.put(
@@ -130,7 +143,12 @@ const BookDetails = () => {
     }
   };
 
+  // Handle remove comment
   const handleRemoveComment = async (commentId) => {
+    if (!isLoggedIn) {
+      alert("You must be logged in to remove a comment.");
+      return;
+    }
     try {
       const token = getToken();
       await axios.delete(`${API_URL}/books/comments/${commentId}`, {
@@ -147,7 +165,12 @@ const BookDetails = () => {
     }
   };
 
+  // Handle add rating
   const handleAddRating = async (rating) => {
+    if (!isLoggedIn) {
+      alert("You must be logged in to rate a book.");
+      return;
+    }
     try {
       const config = { headers: getAuthHeaders() };
       await axios.post(`${API_URL}/books/${id}/ratings`, { rating }, config);
@@ -159,7 +182,12 @@ const BookDetails = () => {
     }
   };
 
+  // Handle purchase book
   const handlePurchaseBook = async () => {
+    if (!isLoggedIn) {
+      alert("You must be logged in to purchase a book.");
+      return;
+    }
     try {
       const config = { headers: getAuthHeaders() };
       const response = await axios.post(
@@ -199,8 +227,14 @@ const BookDetails = () => {
             <p>You own this book.</p>
           ) : (
             <>
-              <p>You do not own this book.</p>
-              <button onClick={handlePurchaseBook}>Buy this Book</button>
+              {isLoggedIn ? (
+                <>
+                  <p>You do not own this book.</p>
+                  <button onClick={handlePurchaseBook}>Buy this Book</button>
+                </>
+              ) : (
+                <p>You must be registered to purchase this book.</p>
+              )}
             </>
           )}
           {book.poster && (
@@ -210,33 +244,38 @@ const BookDetails = () => {
       )}
       <div>
         <h3>Comments</h3>
+        {console.log("has book:", userHasBook)}
         {comments.map((comment) => (
           <Comment
             key={comment._id}
             id={comment._id}
             text={comment.comment}
+            canEdit={userHasBook && isLoggedIn}
             onEditComment={handleEditComment}
             onRemoveComment={handleRemoveComment}
           />
         ))}
-        {getToken() && (
+        {userHasBook && (
           <>
             <h3>Leave a Comment</h3>
             <Comment onAddComment={handleAddComment} />
           </>
         )}
+        {!userHasBook && (
+          <p>You must be registered and have the book to add comments.</p>
+        )}
       </div>
       {userHasBook && (
         <div>
           <h3>Rate this Book</h3>
-          {getToken() ? (
+          {isLoggedIn ? (
             userHasRated ? (
               <p>You have already rated this book.</p>
             ) : (
               <Rating onAddRating={handleAddRating} />
             )
           ) : (
-            <p>Please log in to rate this book.</p>
+            <p>You must be registered to rate this book.</p>
           )}
         </div>
       )}

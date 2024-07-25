@@ -3,59 +3,70 @@ import { useState } from "react";
 const Comment = ({
   id,
   text,
-  onAddComment,
+  canEdit,
   onEditComment,
   onRemoveComment,
+  onAddComment,
 }) => {
-  const [commentText, setCommentText] = useState(text || "");
   const [isEditing, setIsEditing] = useState(false);
+  const [commentText, setCommentText] = useState(text || "");
+  const [newCommentText, setNewCommentText] = useState("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (commentText.trim()) {
-      if (isEditing && id) {
-        onEditComment(id, commentText);
-      } else {
-        onAddComment(commentText);
-      }
-      setCommentText("");
-      setIsEditing(false);
-    }
-  };
-
-  const handleEdit = () => {
+  const handleEditClick = () => {
     setIsEditing(true);
+    setCommentText(text);
   };
 
-  const handleRemove = () => {
-    if (id) {
-      onRemoveComment(id);
-    }
+  const handleSaveClick = () => {
+    onEditComment(id, commentText);
+    setIsEditing(false);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    setCommentText(text);
+  };
+
+  const handleRemoveClick = () => {
+    onRemoveComment(id);
+  };
+
+  const handleAddComment = () => {
+    onAddComment(newCommentText);
+    setNewCommentText("");
   };
 
   return (
-    <div>
+    <div className="comment">
       {isEditing ? (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
+        <>
+          <textarea
             value={commentText}
-            onChange={(event) => setCommentText(event.target.value)}
-            placeholder="Edit your comment..."
+            onChange={(e) => setCommentText(e.target.value)}
           />
-          <button type="submit">Save</button>
-          <button type="button" onClick={() => setIsEditing(false)}>
-            Cancel
-          </button>
-        </form>
+          <button onClick={handleSaveClick}>Save</button>
+          <button onClick={handleCancelClick}>Cancel</button>
+        </>
       ) : (
         <>
           <p>{text}</p>
-          {onEditComment && !id && <button onClick={handleEdit}>Edit</button>}
-          {onRemoveComment && !id && (
-            <button onClick={handleRemove}>Remove</button>
+          {canEdit && (
+            <>
+              <button onClick={handleEditClick}>Edit</button>
+              <button onClick={handleRemoveClick}>Remove</button>
+            </>
           )}
         </>
+      )}
+      {onAddComment && (
+        <div>
+          <textarea
+            value={newCommentText}
+            onChange={(e) => setNewCommentText(e.target.value)}
+            placeholder="Leave a comment"
+          />
+          <button onClick={handleAddComment}>Add Comment</button>
+        </div>
       )}
     </div>
   );
