@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const User = require("../models/user");
 
 // Generate a JWT secret if it doesn't exist

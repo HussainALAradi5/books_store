@@ -7,8 +7,8 @@ import HomePage from "../pages/HomePage";
 import NavBar from "./NavBar";
 import AboutUs from "../pages/AboutUs";
 import Receipt from "./Receipt";
-import { useState } from "react";
 import SeeRequest from "./SeeRequests";
+import { useState } from "react";
 
 const MainContainer = () => {
   const [authenticated, setAuthenticated] = useState(false);

@@ -3,7 +3,8 @@ const User = require("../models/user");
 
 const addBookToUser = async (req, res) => {
   try {
-    const { bookId } = req.body;
+    const bookId = req.params.id; // Get bookId from URL params
+    console.log(`Received bookId: ${bookId}`);
     const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
@@ -24,6 +25,7 @@ const addBookToUser = async (req, res) => {
     res.status(400).send("Error adding book to user.");
   }
 };
+
 const findBookByName = async (req, res) => {
   const { name } = req.query; // Assuming you're sending the book name as a query parameter
 

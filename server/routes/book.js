@@ -12,6 +12,7 @@ router.get("/:id/ratings", ratingCtrl.showAverageRating);
 router.get("/:id/comments", commentCtrl.getCommentsByBookId);
 
 router.use(authenticate);
+router.get("/:id/user-rating", ratingCtrl.checkUserRating);
 router.get("/findByName", bookCtrl.findBookByName);
 
 router.post("/:id/ratings", ratingCtrl.rateThisBook);
@@ -19,7 +20,7 @@ router.post("/:id/comments", commentCtrl.addComment);
 router.put("/comments/:id", commentCtrl.editComment);
 router.delete("/comments/:id", commentCtrl.removeComment);
 
-router.post("/add", bookCtrl.addBookToUser, receiptCtrl.generateReceipt);
+router.post("/:id/add", bookCtrl.addBookToUser, receiptCtrl.generateReceipt);
 
 router.post("/addToDatabase", authorizeAdmin, bookCtrl.addBookToDatabase);
 router.put("/:id", authorizeAdmin, bookCtrl.updateBook);

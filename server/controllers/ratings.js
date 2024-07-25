@@ -24,10 +24,13 @@ const rateThisBook = async (req, res) => {
       user: userId,
       book: book._id,
     });
+
     if (existingRating) {
       // Update existing rating if necessary
       existingRating.rating = rating;
       await existingRating.save();
+
+      // Update the Book's ratings array to reflect the updated rating
       return res.status(200).json({ message: "Rating updated successfully" });
     }
 
@@ -40,10 +43,34 @@ const rateThisBook = async (req, res) => {
 
     await newRating.save();
 
+    // Add the new rating to the Book's ratings array
+    book.ratings.push(newRating._id);
+    await book.save();
+
     res.status(201).json({ message: "Rating added successfully" });
   } catch (error) {
     console.error("Error adding rating:", error);
     res.status(500).json({ error: "Failed to add rating" });
+  }
+};
+
+const checkUserRating = async (req, res) => {
+  const userId = req.user.id;
+  const bookId = req.params.id;
+
+  try {
+    // Find the rating for the specific user and book
+    const rating = await Rating.findOne({ user: userId, book: bookId });
+
+    // Send back the rating if found, otherwise null
+    if (rating) {
+      res.status(200).json({ rating: rating.rating });
+    } else {
+      res.status(200).json({ rating: null });
+    }
+  } catch (error) {
+    console.error("Error checking user rating:", error.message);
+    res.status(500).json({ error: "Failed to check user rating" });
   }
 };
 
@@ -120,4 +147,5 @@ module.exports = {
   rateThisBook,
   showTotalRating,
   showAverageRating,
+  checkUserRating,
 };

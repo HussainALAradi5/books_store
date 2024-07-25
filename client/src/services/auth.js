@@ -14,11 +14,17 @@ const setToken = (token) => {
   localStorage.setItem("token", token);
   console.log("Token set:", token);
 };
+const getAuthHeaders = () => {
+  const token = getToken();
+  console.log(`Token used for request: ${token}`); // Logging the token
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 const getUsername = () => {
   const username = localStorage.getItem("username");
   console.log("Username retrieved:", username);
   return username;
 };
+
 // Utility to remove the JWT token from localStorage
 const removeToken = () => {
   localStorage.removeItem("token");
@@ -109,6 +115,7 @@ const getUserDetails = async () => {
     throw new Error("Error fetching user details.");
   }
 };
+
 const hasUserRatedBook = async (bookId) => {
   console.log("Checking if user has rated book with ID:", bookId);
   try {
@@ -127,6 +134,7 @@ const hasUserRatedBook = async (bookId) => {
     return false;
   }
 };
+
 // Checks if the user owns a specific book
 const checkUserOwnsBook = async (bookId) => {
   console.log("Checking if user owns book with ID:", bookId);
@@ -203,4 +211,5 @@ export {
   makeAdmin,
   getUsername,
   hasUserRatedBook,
+  getAuthHeaders,
 };
