@@ -4,9 +4,8 @@ import { useParams } from "react-router-dom";
 import Comment from "./Comment";
 import Rating from "./Rating";
 import { getAuthHeaders, checkUserOwnsBook, getToken } from "../services/auth";
+
 const API_URL = "http://localhost:3000";
-console.log("token:", getToken());
-console.log("getAuthHeaders:", getAuthHeaders());
 
 const BookDetails = () => {
   const { id } = useParams();
@@ -24,7 +23,6 @@ const BookDetails = () => {
       const config = { headers: getAuthHeaders() };
       const response = await axios.get(`${API_URL}/books/${id}`, config);
       setBook(response.data);
-      console.log(`Fetched book details: ${JSON.stringify(response.data)}`);
     } catch (error) {
       console.error("Error fetching book details:", error.message);
       setError("Error fetching book details.");
@@ -40,7 +38,6 @@ const BookDetails = () => {
         config
       );
       setComments(response.data);
-      console.log(`Fetched comments: ${JSON.stringify(response.data)}`);
     } catch (error) {
       console.error("Error fetching comments:", error.message);
       setError("Error fetching comments.");
@@ -67,7 +64,6 @@ const BookDetails = () => {
   const checkOwnership = async () => {
     try {
       const ownsBook = await checkUserOwnsBook(id);
-      console.log("user own book:", ownsBook);
       setUserHasBook(ownsBook);
     } catch (error) {
       console.error("Error checking book ownership:", error.message);
@@ -84,8 +80,7 @@ const BookDetails = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userRating = response.data.rating;
-        console.log("Fetched user rating:", userRating); // Debug log
-        setUserHasRated(userRating !== null); // Update this to handle null
+        setUserHasRated(userRating !== null);
       } else {
         setUserHasRated(false);
       }
@@ -98,13 +93,12 @@ const BookDetails = () => {
   const handleAddComment = async (commentText) => {
     try {
       const token = getToken();
-
       const response = await axios.post(
-        `http://localhost:3000/books/${id}/comments`,
-        { comment: commentText }, // Ensure this is the correct structure
-        { headers: { Authorization: `Bearer ${token}` } } // Include auth headers if necessary
+        `${API_URL}/books/${id}/comments`,
+        { comment: commentText },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Comment added:", response.data);
+      setComments((prevComments) => [...prevComments, response.data.comment]);
     } catch (error) {
       console.error(
         "Error adding comment:",
@@ -113,7 +107,46 @@ const BookDetails = () => {
     }
   };
 
-  // Add a rating
+  const handleEditComment = async (commentId, newCommentText) => {
+    try {
+      const token = getToken();
+      await axios.put(
+        `${API_URL}/books/comments/${commentId}`,
+        { comment: newCommentText },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment._id === commentId
+            ? { ...comment, comment: newCommentText }
+            : comment
+        )
+      );
+    } catch (error) {
+      console.error(
+        "Error editing comment:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
+  const handleRemoveComment = async (commentId) => {
+    try {
+      const token = getToken();
+      await axios.delete(`${API_URL}/books/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment._id !== commentId)
+      );
+    } catch (error) {
+      console.error(
+        "Error removing comment:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
   const handleAddRating = async (rating) => {
     try {
       const config = { headers: getAuthHeaders() };
@@ -126,17 +159,14 @@ const BookDetails = () => {
     }
   };
 
-  // Purchase the book
   const handlePurchaseBook = async () => {
     try {
       const config = { headers: getAuthHeaders() };
-      console.log(`Sending request to: ${API_URL}/books/${id}/add`);
       const response = await axios.post(
         `${API_URL}/books/${id}/add`,
         {},
         config
       );
-      console.log(`Response: ${JSON.stringify(response.data)}`);
       setUserHasBook(true);
     } catch (error) {
       console.error("Error purchasing book:", error.message);
@@ -164,7 +194,7 @@ const BookDetails = () => {
           <p>{book.description}</p>
           <p>Published: {book.publishYear}</p>
           <p>Average Rating: {averageRating}</p>
-          <p>price: {book.price} BHD</p>
+          <p>Price: {book.price} BHD</p>
           {userHasBook ? (
             <p>You own this book.</p>
           ) : (
@@ -180,8 +210,14 @@ const BookDetails = () => {
       )}
       <div>
         <h3>Comments</h3>
-        {comments.map((comment, index) => (
-          <Comment key={index} text={comment.text} />
+        {comments.map((comment) => (
+          <Comment
+            key={comment._id}
+            id={comment._id}
+            text={comment.comment}
+            onEditComment={handleEditComment}
+            onRemoveComment={handleRemoveComment}
+          />
         ))}
         {getToken() && (
           <>
@@ -190,18 +226,20 @@ const BookDetails = () => {
           </>
         )}
       </div>
-      <div>
-        <h3>Rate this Book</h3>
-        {getToken() ? (
-          userHasRated ? (
-            <p>You have already rated this book.</p>
+      {userHasBook && (
+        <div>
+          <h3>Rate this Book</h3>
+          {getToken() ? (
+            userHasRated ? (
+              <p>You have already rated this book.</p>
+            ) : (
+              <Rating onAddRating={handleAddRating} />
+            )
           ) : (
-            <Rating onAddRating={handleAddRating} />
-          )
-        ) : (
-          <p>Please log in to rate this book.</p>
-        )}
-      </div>
+            <p>Please log in to rate this book.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
