@@ -4,11 +4,9 @@ const User = require("../models/user");
 const addBookToUser = async (req, res) => {
   try {
     const bookId = req.params.id; // Get bookId from URL params
-    console.log(`Received bookId: ${bookId}`);
     const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
-      console.log("User not found.");
       return res.status(404).send("User not found.");
     }
 
@@ -77,7 +75,6 @@ const getBookById = async (req, res) => {
   try {
     const book = await Book.findById(id);
     if (!book) {
-      console.log("Book not found.");
       return res.status(404).send("Book not found.");
     }
     res.status(200).send(book);
@@ -97,7 +94,6 @@ const updateBook = async (req, res) => {
       { new: true }
     );
     if (!updatedBook) {
-      console.log("Book not found.");
       return res.status(404).send("Book not found.");
     }
     res.status(200).send(updatedBook);
@@ -112,7 +108,6 @@ const deleteBook = async (req, res) => {
   try {
     const deletedBook = await Book.findByIdAndDelete(id);
     if (!deletedBook) {
-      console.log("Book not found.");
       return res.status(404).send("Book not found.");
     }
     res.status(200).send("Book deleted successfully.");
