@@ -3,28 +3,21 @@ import axios from "axios";
 const API_URL = "http://localhost:3000/";
 
 // Utility to get the JWT token from localStorage
-export const getToken = () => {
-  const token = localStorage.getItem("token");
-  return token;
-};
+const getToken = () => localStorage.getItem("token");
 
 // Utility to set the JWT token in localStorage
-const setToken = (token) => {
-  localStorage.setItem("token", token);
-};
+const setToken = (token) => localStorage.setItem("token", token);
+
+// Utility to get the Authorization headers
 const getAuthHeaders = () => {
   const token = getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
-};
-const getUsername = () => {
-  const username = localStorage.getItem("username");
-  return username;
 };
 
 // Utility to remove the JWT token from localStorage
 const removeToken = () => {
   localStorage.removeItem("token");
-  console.log("Token removed");
+  console.log("Token removed"); // For debugging
 };
 
 // Handles API errors
@@ -32,7 +25,7 @@ const handleError = (error) => {
   const message = error.response
     ? error.response.data.message
     : "An unexpected error occurred.";
-  console.error("API error:", message);
+  console.error("API error:", message); // For debugging
   return message;
 };
 
@@ -74,10 +67,9 @@ const isLoggedIn = async () => {
     if (!token) return false;
 
     const response = await axios.get(`${API_URL}user/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: getAuthHeaders(),
     });
-    const loggedIn = response.data.loggedIn === true;
-    return loggedIn;
+    return response.data.loggedIn === true;
   } catch (error) {
     console.error("Error checking login status:", handleError(error));
     return false;
@@ -87,15 +79,14 @@ const isLoggedIn = async () => {
 // Logs out the user
 const logout = () => {
   removeToken();
-  console.log("User logged out");
+  console.log("User logged out"); // For debugging
 };
 
 // Fetches user details
 const getUserDetails = async () => {
   try {
-    const token = getToken();
     const response = await axios.get(`${API_URL}user/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: getAuthHeaders(),
     });
     return response.data;
   } catch (error) {
@@ -104,17 +95,13 @@ const getUserDetails = async () => {
   }
 };
 
+// Checks if the user has rated a specific book
 const hasUserRatedBook = async (bookId) => {
   try {
-    const token = getToken();
-    if (!token) throw new Error("User not authenticated");
-
     const response = await axios.get(`${API_URL}/books/${bookId}/user-rating`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: getAuthHeaders(),
     });
-
-    const userRating = response.data.rating;
-    return userRating !== undefined; // Return true if user has a rating, false otherwise
+    return response.data.rating !== undefined; // Return true if user has a rating, false otherwise
   } catch (error) {
     console.error("Error checking user book rating:", handleError(error));
     return false;
@@ -123,12 +110,9 @@ const hasUserRatedBook = async (bookId) => {
 
 // Checks if the user owns a specific book
 const checkUserOwnsBook = async (bookId) => {
-  console.log("Checking if user owns book with ID:", bookId);
   try {
     const userDetails = await getUserDetails();
-    const ownsBook = userDetails.books.includes(bookId);
-    console.log("User owns book:", ownsBook);
-    return ownsBook;
+    return userDetails.books.includes(bookId);
   } catch (error) {
     console.error("Error checking book ownership:", handleError(error));
     return false;
@@ -139,8 +123,7 @@ const checkUserOwnsBook = async (bookId) => {
 const checkUserActiveStatus = async () => {
   try {
     const userDetails = await getUserDetails();
-    const isActive = userDetails.isActive;
-    return isActive;
+    return userDetails.isActive;
   } catch (error) {
     console.error("Error checking user active status:", handleError(error));
     return false;
@@ -150,12 +133,10 @@ const checkUserActiveStatus = async () => {
 // Checks if the user is an admin
 const checkUserIsAdmin = async () => {
   try {
-    const token = getToken();
     const response = await axios.get(`${API_URL}user/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: getAuthHeaders(),
     });
-    const isAdmin = response.data.admin;
-    return isAdmin;
+    return response.data.admin;
   } catch (error) {
     console.error("Error checking user admin status:", handleError(error));
     return false;
@@ -165,11 +146,10 @@ const checkUserIsAdmin = async () => {
 // Makes a user an admin
 const makeAdmin = async (email) => {
   try {
-    const token = getToken();
     const response = await axios.post(
       `${API_URL}users/admin`,
       { email },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -189,7 +169,7 @@ export {
   checkUserActiveStatus,
   checkUserIsAdmin,
   makeAdmin,
-  getUsername,
-  hasUserRatedBook,
+  getToken,
   getAuthHeaders,
+  hasUserRatedBook,
 };

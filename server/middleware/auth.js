@@ -11,8 +11,13 @@ const generateJwtSecret = () => {
 const authenticate = (req, res, next) => {
   const authHeader = req.header("Authorization");
   const token = authHeader?.replace("Bearer ", "");
-
   if (!token) {
+    console.error(
+      JSON.stringify({
+        action: "authenticate",
+        message: "Access denied. No token provided.",
+      })
+    );
     return res.status(401).send("Access denied. No token provided.");
   }
 
@@ -20,6 +25,7 @@ const authenticate = (req, res, next) => {
     const secret = generateJwtSecret();
     const decoded = jwt.verify(token, secret);
     req.user = decoded;
+
     next();
   } catch (error) {
     console.error(
@@ -39,8 +45,15 @@ const checkUserActiveStatus = async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
     if (!user.isActive) {
+      console.error(
+        JSON.stringify({
+          action: "checkUserActiveStatus",
+          message: "User account is not active.",
+        })
+      );
       return res.status(403).send("Your account is not active.");
     }
+
     next();
   } catch (error) {
     console.error(
@@ -61,8 +74,15 @@ const checkBookOwnership = async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
     if (!user.books.includes(bookId)) {
+      console.error(
+        JSON.stringify({
+          action: "checkBookOwnership",
+          message: "User does not own the book.",
+        })
+      );
       return res.status(403).send("You don't own this book.");
     }
+
     next();
   } catch (error) {
     console.error(
@@ -82,8 +102,15 @@ const authorizeAdmin = async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
     if (!user.admin) {
+      console.error(
+        JSON.stringify({
+          action: "authorizeAdmin",
+          message: "Unauthorized. Admin access required.",
+        })
+      );
       return res.status(403).send("Unauthorized. Admin access required.");
     }
+
     next();
   } catch (error) {
     console.error(
@@ -126,6 +153,12 @@ const generateToken = (user) => {
   return token;
 };
 
+// Get Authorization headers
+const getAuthHeaders = () => {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 module.exports = {
   authenticate,
   checkUserActiveStatus,
@@ -135,4 +168,5 @@ module.exports = {
   comparePassword,
   checkUserExists,
   generateToken,
+  getAuthHeaders,
 };

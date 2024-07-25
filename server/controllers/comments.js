@@ -2,28 +2,41 @@ const Comment = require("../models/comment");
 
 // Add Comment
 const addComment = async (req, res) => {
+  const { id: bookId } = req.params; // Extract book ID from URL
+  const { comment } = req.body; // Extract comment from request body
+  const userId = req.user._id; // Extract user ID from authenticated request
+  console.log("comment:", comment);
+  if (!comment) {
+    return res.status(400).json({ error: "Comment text is required" });
+  }
+
   try {
-    // Ensure user is logged in and active
-    if (!req.user || !req.user.isActive) {
-      return res.status(401).end(); // Unauthorized
+    // Find book by ID
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
     }
 
-    const { userId, bookId, comment } = req.body;
-
-    // Create new comment
+    // Create and save the new comment
     const newComment = new Comment({
       userId,
-      bookId,
+      bookId: book._id,
       comment,
     });
 
-    // Save comment to database
     await newComment.save();
 
-    res.status(201).end(); // Created
+    // Optionally, you can add the new comment to the Book's comments array
+    // (if you have a comments array in your Book schema)
+    book.comments.push(newComment._id); // Assuming book schema has a comments array
+    await book.save();
+
+    res
+      .status(201)
+      .json({ message: "Comment added successfully", comment: newComment });
   } catch (error) {
     console.error("Error adding comment:", error);
-    res.status(500).end(); // Internal Server Error
+    res.status(500).json({ error: "Failed to add comment" });
   }
 };
 
@@ -33,35 +46,30 @@ const editComment = async (req, res) => {
   const { comment } = req.body;
 
   try {
-    // Ensure user is logged in and active
     if (!req.user || !req.user.isActive) {
-      return res.status(401).end(); // Unauthorized
+      return res.status(401).json({ message: "Unauthorized" }); // Unauthorized
     }
 
-    // Find comment by ID
     let existingComment = await Comment.findById(id);
 
-    // Check if comment exists
     if (!existingComment) {
-      return res.status(404).end(); // Not Found
+      return res.status(404).json({ message: "Comment not found" }); // Not Found
     }
 
-    // Check ownership or admin rights (example: user editing own comment)
     if (
       existingComment.userId.toString() !== req.user._id.toString() &&
       !req.user.admin
     ) {
-      return res.status(403).end(); // Forbidden
+      return res.status(403).json({ message: "Forbidden" }); // Forbidden
     }
 
-    // Update comment
     existingComment.comment = comment;
     await existingComment.save();
 
-    res.status(200).end(); // OK
+    res.status(200).json(existingComment); // OK
   } catch (error) {
     console.error("Error editing comment:", error);
-    res.status(500).end(); // Internal Server Error
+    res.status(500).json({ message: "Error editing comment" }); // Internal Server Error
   }
 };
 
@@ -70,45 +78,44 @@ const removeComment = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Ensure user is logged in and active
     if (!req.user || !req.user.isActive) {
-      return res.status(401).end(); // Unauthorized
+      return res.status(401).json({ message: "Unauthorized" }); // Unauthorized
     }
 
-    // Find comment by ID
     let existingComment = await Comment.findById(id);
 
-    // Check if comment exists
     if (!existingComment) {
-      return res.status(404).end(); // Not Found
+      return res.status(404).json({ message: "Comment not found" }); // Not Found
     }
 
-    // Check ownership or admin rights (example: user deleting own comment or admin)
     if (
       existingComment.userId.toString() !== req.user._id.toString() &&
       !req.user.admin
     ) {
-      return res.status(403).end(); // Forbidden
+      return res.status(403).json({ message: "Forbidden" }); // Forbidden
     }
 
-    // Remove comment
     await existingComment.remove();
 
-    res.status(200).end(); // OK
+    res.status(200).json({ message: "Comment removed" }); // OK
   } catch (error) {
     console.error("Error deleting comment:", error);
-    res.status(500).end(); // Internal Server Error
+    res.status(500).json({ message: "Error deleting comment" }); // Internal Server Error
   }
 };
+
+// Get Comments by Book ID
 const getCommentsByBookId = async (req, res) => {
   try {
     const bookId = req.params.id;
-    const comments = await Comment.find({ bookId }); // Replace with actual DB query
+    const comments = await Comment.find({ bookId });
+
     res.json(comments);
   } catch (error) {
     res.status(500).json({ message: "Error fetching comments." });
   }
 };
+
 module.exports = {
   addComment,
   editComment,

@@ -8,10 +8,10 @@ const { authenticate, authorizeAdmin } = require("../middleware/auth");
 router.post("/register", userCtrl.register);
 router.post("/login", userCtrl.login);
 
-// Apply authentication middleware to all subsequent routes
+// Middleware applied here will affect all routes below
 router.use(authenticate);
 
-// Admin routes (requires authentication and admin privileges)
+// Admin routes
 router.post("/requestAdmin", userCtrl.requestAdmin);
 router.get("/requests", authorizeAdmin, userCtrl.getRequests);
 router.put("/requests/:id/accept", authorizeAdmin, userCtrl.acceptRequest);

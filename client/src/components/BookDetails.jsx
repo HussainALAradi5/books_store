@@ -4,8 +4,9 @@ import { useParams } from "react-router-dom";
 import Comment from "./Comment";
 import Rating from "./Rating";
 import { getAuthHeaders, checkUserOwnsBook, getToken } from "../services/auth";
-
 const API_URL = "http://localhost:3000";
+console.log("token:", getToken());
+console.log("getAuthHeaders:", getAuthHeaders());
 
 const BookDetails = () => {
   const { id } = useParams();
@@ -54,10 +55,8 @@ const BookDetails = () => {
         `${API_URL}/books/${id}/ratings`,
         config
       );
-      console.log(`Fetched rating response: ${JSON.stringify(response.data)}`);
       const { averageRating } = response.data;
       setAverageRating(averageRating);
-      console.log(`Calculated average rating: ${averageRating}`);
     } catch (error) {
       console.error("Error fetching average rating:", error.message);
       setError("Error fetching average rating.");
@@ -68,6 +67,7 @@ const BookDetails = () => {
   const checkOwnership = async () => {
     try {
       const ownsBook = await checkUserOwnsBook(id);
+      console.log("user own book:", ownsBook);
       setUserHasBook(ownsBook);
     } catch (error) {
       console.error("Error checking book ownership:", error.message);
@@ -96,7 +96,7 @@ const BookDetails = () => {
   };
 
   // Add a comment
-  const handleAddComment = async (commentText) => {
+  /*  const handleAddComment = async (commentText) => {
     try {
       const config = { headers: getAuthHeaders() };
       await axios.post(
@@ -108,6 +108,23 @@ const BookDetails = () => {
     } catch (error) {
       console.error("Error adding comment:", error.message);
       setError("Error adding comment.");
+    }
+  }; */
+  const handleAddComment = async (commentText) => {
+    try {
+      const token = getToken();
+
+      const response = await axios.post(
+        `http://localhost:3000/books/${id}/comments`,
+        { comment: commentText }, // Ensure this is the correct structure
+        { headers: { Authorization: `Bearer ${token}` } } // Include auth headers if necessary
+      );
+      console.log("Comment added:", response.data);
+    } catch (error) {
+      console.error(
+        "Error adding comment:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
@@ -162,6 +179,7 @@ const BookDetails = () => {
           <p>{book.description}</p>
           <p>Published: {book.publishYear}</p>
           <p>Average Rating: {averageRating}</p>
+          <p>price: {book.price} BHD</p>
           {userHasBook ? (
             <p>You own this book.</p>
           ) : (
