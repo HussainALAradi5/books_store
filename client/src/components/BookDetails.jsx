@@ -16,6 +16,7 @@ const BookDetails = () => {
   const [error, setError] = useState("");
   const [userHasBook, setUserHasBook] = useState(false);
   const [userHasRated, setUserHasRated] = useState(false);
+  const [userHasCommented, setUserHasCommented] = useState(false); // New state for tracking comments
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Fetch book details
@@ -39,6 +40,15 @@ const BookDetails = () => {
         config
       );
       setComments(response.data);
+
+      // Check if the user has already commented
+      const token = getToken();
+      if (token) {
+        const userCommented = response.data.some(
+          (comment) => comment.userId === token.userId
+        ); // Assuming userId is stored in token
+        setUserHasCommented(userCommented);
+      }
     } catch (error) {
       console.error("Error fetching comments:", error.message);
       setError("Error fetching comments.");
@@ -107,11 +117,9 @@ const BookDetails = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setComments((prevComments) => [...prevComments, response.data.comment]);
+      setUserHasCommented(true); // Update state to reflect that user has commented
     } catch (error) {
-      console.error(
-        "Error adding comment:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error adding comment:", error.message);
     }
   };
 
@@ -136,10 +144,7 @@ const BookDetails = () => {
         )
       );
     } catch (error) {
-      console.error(
-        "Error editing comment:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error editing comment:", error.message);
     }
   };
 
@@ -158,10 +163,7 @@ const BookDetails = () => {
         prevComments.filter((comment) => comment._id !== commentId)
       );
     } catch (error) {
-      console.error(
-        "Error removing comment:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error removing comment:", error.message);
     }
   };
 
@@ -190,11 +192,7 @@ const BookDetails = () => {
     }
     try {
       const config = { headers: getAuthHeaders() };
-      const response = await axios.post(
-        `${API_URL}/books/${id}/add`,
-        {},
-        config
-      );
+      await axios.post(`${API_URL}/books/${id}/add`, {}, config);
       setUserHasBook(true);
     } catch (error) {
       console.error("Error purchasing book:", error.message);
@@ -203,12 +201,16 @@ const BookDetails = () => {
   };
 
   useEffect(() => {
-    fetchBookDetails();
-    fetchComments();
-    fetchAverageRating();
-    checkOwnership();
-    checkUserRating();
-    setLoading(false);
+    const fetchData = async () => {
+      await fetchBookDetails();
+      await fetchComments();
+      await fetchAverageRating();
+      await checkOwnership();
+      await checkUserRating();
+      setLoading(false);
+    };
+
+    fetchData();
   }, [id]);
 
   if (loading) return <p>Loading...</p>;
@@ -254,12 +256,13 @@ const BookDetails = () => {
             onRemoveComment={handleRemoveComment}
           />
         ))}
-        {userHasBook && (
-          <>
-            <h3>Leave a Comment</h3>
-            <Comment onAddComment={handleAddComment} />
-          </>
-        )}
+        {userHasBook &&
+          !userHasCommented && ( // Conditional rendering
+            <>
+              <h3>Leave a Comment</h3>
+              <Comment onAddComment={handleAddComment} />
+            </>
+          )}
         {!userHasBook && (
           <p>You must be registered and have the book to add comments.</p>
         )}

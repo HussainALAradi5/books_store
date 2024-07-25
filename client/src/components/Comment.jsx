@@ -42,7 +42,7 @@ const Comment = ({
         <>
           <textarea
             value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
+            onChange={(event) => setCommentText(event.target.value)}
           />
           <button onClick={handleSaveClick}>Save</button>
           <button onClick={handleCancelClick}>Cancel</button>
@@ -62,7 +62,7 @@ const Comment = ({
         <div>
           <textarea
             value={newCommentText}
-            onChange={(e) => setNewCommentText(e.target.value)}
+            onChange={(event) => setNewCommentText(event.target.value)}
             placeholder="Leave a comment"
           />
           <button onClick={handleAddComment}>Add Comment</button>

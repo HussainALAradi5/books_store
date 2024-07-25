@@ -3,44 +3,36 @@ const Book = require("../models/book");
 // Add Comment
 
 const addComment = async (req, res) => {
-  const { id: bookId } = req.params; // Extract book ID from URL
-  const { comment } = req.body; // Extract comment from request body
-  const userId = req.user.id; // Extract user ID from authenticated request
-
-  if (!comment) {
-    return res.status(400).json({ error: "Comment text is required" });
-  }
+  const { id } = req.params; // Book ID
+  const { comment } = req.body;
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(401).json({ error: "User not authenticated" });
   }
 
   try {
-    // Find book by ID
-    const book = await Book.findById(bookId);
-    if (!book) {
-      return res.status(404).json({ error: "Book not found" });
+    // Check if the user has already commented on the book
+    const existingComment = await Comment.findOne({ bookId: id, userId });
+
+    if (existingComment) {
+      return res
+        .status(400)
+        .json({ message: "You have already commented on this book." });
     }
 
-    // Create and save the new comment
+    // Add the new comment
     const newComment = new Comment({
-      userId, // Ensure userId is properly assigned
-      bookId: book._id,
+      bookId: id,
+      userId,
       comment,
     });
 
     await newComment.save();
-
-    // Optionally, you can add the new comment to the Book's comments array
-    book.comments.push(newComment._id); // Assuming book schema has a comments array
-    await book.save();
-
-    res
-      .status(201)
-      .json({ message: "Comment added successfully", comment: newComment });
+    res.status(201).json({ comment: newComment });
   } catch (error) {
     console.error("Error adding comment:", error);
-    res.status(500).json({ error: "Failed to add comment" });
+    res.status(500).json({ message: "Error adding comment" });
   }
 };
 // Edit Comment
