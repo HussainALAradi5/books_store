@@ -1,8 +1,7 @@
 const Rating = require("../models/rating");
 const Book = require("../models/book");
-const User = require("../models/user");
+const mongoose = require("mongoose"); // To include the ObjectId
 
-// Add a rating to a book
 const rateThisBook = async (req, res) => {
   const { id } = req.params; // Book ID from URL
   const { rating } = req.body; // Rating from request body
@@ -30,7 +29,12 @@ const rateThisBook = async (req, res) => {
       existingRating.rating = rating;
       await existingRating.save();
 
-      // Update the Book's ratings array to reflect the updated rating
+      // Ensure the rating ID is in the book's ratings array
+      if (!book.ratings.includes(existingRating._id)) {
+        book.ratings.push(existingRating._id);
+        await book.save();
+      }
+
       return res.status(200).json({ message: "Rating updated successfully" });
     }
 
@@ -76,19 +80,15 @@ const checkUserRating = async (req, res) => {
 
 // Helper function to calculate total ratings and count
 const getTotalRatingData = async (bookId) => {
-  console.log(`Calculating total ratings for book ID ${bookId}`);
-
   try {
     const totalRatings = await Rating.aggregate([
-      { $match: { book: bookId } },
+      { $match: { book: new mongoose.Types.ObjectId(bookId) } },
       { $group: { _id: null, total: { $sum: "$rating" }, count: { $sum: 1 } } },
       { $project: { _id: 0, total: 1, count: 1 } },
     ]);
 
-    console.log(`Total ratings data: ${JSON.stringify(totalRatings)}`);
-
     if (totalRatings.length === 0) {
-      return { totalRatings: 0, count: 0 };
+      return { total: 0, count: 0 };
     }
 
     return totalRatings[0];
@@ -102,20 +102,17 @@ const getTotalRatingData = async (bookId) => {
 const showTotalRating = async (req, res) => {
   const { id } = req.params; // Book ID
 
-  console.log(`Fetching total rating for book ID ${id}`);
-
   try {
     // Check if the book exists
     const book = await Book.findById(id);
     if (!book) {
-      console.error("Book not found.");
       return res.status(404).send("Book not found.");
     }
 
     // Get total ratings and count using the helper function
-    const { totalRatings, count } = await getTotalRatingData(id);
+    const { total, count } = await getTotalRatingData(id);
 
-    res.status(200).json({ totalRatings, count });
+    res.status(200).json({ totalRatings: total, count });
   } catch (error) {
     console.error("Error calculating total rating:", error.message);
     res.status(400).send("Error calculating total rating.");
@@ -126,17 +123,22 @@ const showTotalRating = async (req, res) => {
 const showAverageRating = async (req, res) => {
   const { id } = req.params; // Book ID
 
-  console.log(`Fetching average rating for book ID ${id}`);
-
   try {
     // Get total ratings and count using the helper function
-    const { totalRatings, count } = await getTotalRatingData(id);
+    const { total, count } = await getTotalRatingData(id);
+
+    // Ensure total and count are numbers
+    const totalRatingsNumber = parseFloat(total) || 0;
+    const countNumber = parseInt(count, 10) || 0;
 
     // Calculate average rating
-    const averageRating = count > 0 ? totalRatings / count : 0; // Handle division by zero
+    const averageRating =
+      countNumber > 0 ? totalRatingsNumber / countNumber : 0; // Handle division by zero
 
-    console.log(`Average rating: ${averageRating}`);
-    res.status(200).json({ averageRating });
+    // Format average rating to 2 decimal places
+    const formattedAverageRating = averageRating.toFixed(2);
+
+    res.status(200).json({ averageRating: parseFloat(formattedAverageRating) });
   } catch (error) {
     console.error("Error calculating average rating:", error.message);
     res.status(400).send("Error calculating average rating.");
