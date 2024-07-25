@@ -244,7 +244,6 @@ const BookDetails = () => {
       )}
       <div>
         <h3>Comments</h3>
-        {console.log("has book:", userHasBook)}
         {comments.map((comment) => (
           <Comment
             key={comment._id}

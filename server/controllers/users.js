@@ -11,7 +11,6 @@ const register = async (req, res) => {
   try {
     const userExists = await checkUserExists(email);
     if (userExists) {
-      console.log("User already registered with this email.");
       return res.status(400).send("User already registered with this email.");
     }
 
@@ -23,10 +22,8 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
-    console.log("New user created successfully with these details:", newUser);
     res.status(201).send("New user created successfully.");
   } catch (error) {
-    console.log("Error in creating user:", error.message);
     res.status(400).send("Error in creating user.");
   }
 };
@@ -36,13 +33,11 @@ const login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("Invalid email or password.");
       return res.status(400).send("Invalid email or password.");
     }
     const isMatch = await comparePassword(password, user.password_digest);
 
     if (!isMatch) {
-      console.log("Invalid email or password.");
       return res.status(400).send("Invalid email or password.");
     }
 
@@ -70,11 +65,9 @@ const edit = async (req, res) => {
     );
 
     if (!updatedUser) {
-      console.log("No user found with this email");
       return res.status(404).send("No user found with this email.");
     }
 
-    console.log("Updated user data:", updatedUser);
     res.status(200).send("User details updated successfully.");
   } catch (error) {
     console.error("Error updating user:", error.message);
@@ -92,11 +85,9 @@ const deleteUser = async (req, res) => {
     );
 
     if (!deletedUser) {
-      console.log("User not found");
       return res.status(404).send("User not found.");
     }
 
-    console.log("User deleted successfully");
     res.status(200).send("User deleted successfully.");
   } catch (error) {
     console.error("Error deleting user:", error.message);
@@ -112,7 +103,6 @@ const viewUserData = async (req, res) => {
 
     // Check if user exists
     if (!user) {
-      console.log("User not found.");
       return res.status(404).send("User not found.");
     }
 
@@ -136,7 +126,6 @@ const viewBooks = async (req, res) => {
     const userId = req.user.id;
     const user = await User.findById(userId).populate("books");
     if (!user) {
-      console.log("User not found.");
       return res.status(404).send("User not found.");
     }
     res.status(200).send(user.books);

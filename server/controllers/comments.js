@@ -74,12 +74,10 @@ const editComment = async (req, res) => {
     existingComment.comment = comment;
     await existingComment.save();
 
-    res
-      .status(200)
-      .json({
-        message: "Comment edited successfully",
-        comment: existingComment,
-      }); // OK
+    res.status(200).json({
+      message: "Comment edited successfully",
+      comment: existingComment,
+    }); // OK
   } catch (error) {
     console.error("Error editing comment:", error);
     res.status(500).json({ message: "Error editing comment" }); // Internal Server Error
@@ -96,12 +94,14 @@ const removeComment = async (req, res) => {
   }
 
   try {
+    // Find the comment by ID
     let existingComment = await Comment.findById(id);
 
     if (!existingComment) {
       return res.status(404).json({ message: "Comment not found" }); // Not Found
     }
 
+    // Check if the user is authorized to delete the comment
     if (
       existingComment.userId.toString() !== userId.toString() &&
       !req.user.admin
@@ -109,7 +109,8 @@ const removeComment = async (req, res) => {
       return res.status(403).json({ message: "Forbidden" }); // Forbidden
     }
 
-    await existingComment.remove();
+    // Remove the comment
+    await Comment.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Comment removed successfully" }); // OK
   } catch (error) {
@@ -117,7 +118,6 @@ const removeComment = async (req, res) => {
     res.status(500).json({ message: "Error deleting comment" }); // Internal Server Error
   }
 };
-
 // Get Comments by Book ID
 const getCommentsByBookId = async (req, res) => {
   try {
