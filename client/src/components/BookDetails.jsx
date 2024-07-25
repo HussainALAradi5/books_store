@@ -95,21 +95,6 @@ const BookDetails = () => {
     }
   };
 
-  // Add a comment
-  /*  const handleAddComment = async (commentText) => {
-    try {
-      const config = { headers: getAuthHeaders() };
-      await axios.post(
-        `${API_URL}/books/${id}/comments`,
-        { text: commentText },
-        config
-      );
-      fetchComments();
-    } catch (error) {
-      console.error("Error adding comment:", error.message);
-      setError("Error adding comment.");
-    }
-  }; */
   const handleAddComment = async (commentText) => {
     try {
       const token = getToken();
