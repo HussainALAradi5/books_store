@@ -29,6 +29,14 @@ const addComment = async (req, res) => {
     });
 
     await newComment.save();
+
+    // Add the new comment to the book's comments array
+    await Book.findByIdAndUpdate(
+      id,
+      { $push: { comments: newComment._id } },
+      { new: true }
+    );
+
     res.status(201).json({ comment: newComment });
   } catch (error) {
     console.error("Error adding comment:", error);
@@ -121,10 +129,23 @@ const getCommentsByBookId = async (req, res) => {
     res.status(500).json({ message: "Error fetching comments." });
   }
 };
+const checkUserComment = async (req, res) => {
+  try {
+    const { id: bookId } = req.params;
+    const userId = req.user.id; // Extract user ID from the authenticated request
 
+    // Check if user has commented on the book
+    const comments = await Comment.find({ bookId, userId });
+    return res.json({ hasCommented: comments.length > 0 });
+  } catch (error) {
+    console.error("Error checking user comment:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 module.exports = {
   addComment,
   editComment,
   removeComment,
   getCommentsByBookId,
+  checkUserComment,
 };

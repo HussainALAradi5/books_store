@@ -1,3 +1,5 @@
+// routes/book.js
+
 const express = require("express");
 const router = express.Router();
 const bookCtrl = require("../controllers/books");
@@ -15,6 +17,7 @@ router.get("/:id/comments", commentCtrl.getCommentsByBookId);
 // Middleware applied here will affect all routes below
 router.use(authenticate);
 router.get("/:id/user-rating", ratingCtrl.checkUserRating);
+router.get("/:id/user-comment", commentCtrl.checkUserComment); // New route for checking user comment
 router.get("/findByName", bookCtrl.findBookByName);
 
 router.post("/:id/ratings", ratingCtrl.rateThisBook);

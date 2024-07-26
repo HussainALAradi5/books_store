@@ -98,7 +98,7 @@ const getUserDetails = async () => {
 // Checks if the user has rated a specific book
 const hasUserRatedBook = async (bookId) => {
   try {
-    const response = await axios.get(`${API_URL}/books/${bookId}/user-rating`, {
+    const response = await axios.get(`${API_URL}books/${bookId}/user-rating`, {
       headers: getAuthHeaders(),
     });
     return response.data.rating !== undefined; // Return true if user has a rating, false otherwise
@@ -107,7 +107,18 @@ const hasUserRatedBook = async (bookId) => {
     return false;
   }
 };
-
+const hasUserCommentedOnBook = async (bookId) => {
+  try {
+    const response = await axios.get(`${API_URL}books/${bookId}/user-comment`, {
+      headers: getAuthHeaders(),
+    });
+    console.log("response:", response);
+    return response.data.hasCommented;
+  } catch (error) {
+    console.error("Error checking user book comments:", error.message);
+    return false;
+  }
+};
 // Checks if the user owns a specific book
 const checkUserOwnsBook = async (bookId) => {
   try {
@@ -172,4 +183,5 @@ export {
   getToken,
   getAuthHeaders,
   hasUserRatedBook,
+  hasUserCommentedOnBook,
 };

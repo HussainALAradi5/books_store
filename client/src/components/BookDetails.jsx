@@ -3,7 +3,12 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Comment from "./Comment";
 import Rating from "./Rating";
-import { getAuthHeaders, checkUserOwnsBook, getToken } from "../services/auth";
+import {
+  getAuthHeaders,
+  checkUserOwnsBook,
+  getToken,
+  hasUserCommentedOnBook,
+} from "../services/auth";
 
 const API_URL = "http://localhost:3000";
 
@@ -16,7 +21,7 @@ const BookDetails = () => {
   const [error, setError] = useState("");
   const [userHasBook, setUserHasBook] = useState(false);
   const [userHasRated, setUserHasRated] = useState(false);
-  const [userHasCommented, setUserHasCommented] = useState(false); // New state for tracking comments
+  const [userHasCommented, setUserHasCommented] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Fetch book details
@@ -40,15 +45,6 @@ const BookDetails = () => {
         config
       );
       setComments(response.data);
-
-      // Check if the user has already commented
-      const token = getToken();
-      if (token) {
-        const userCommented = response.data.some(
-          (comment) => comment.userId === token.userId
-        ); // Assuming userId is stored in token
-        setUserHasCommented(userCommented);
-      }
     } catch (error) {
       console.error("Error fetching comments:", error.message);
       setError("Error fetching comments.");
@@ -87,19 +83,30 @@ const BookDetails = () => {
     try {
       const token = getToken();
       if (token) {
-        setIsLoggedIn(true); // Set logged-in status
+        setIsLoggedIn(true);
         const response = await axios.get(`${API_URL}/books/${id}/user-rating`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userRating = response.data.rating;
         setUserHasRated(userRating !== null);
       } else {
-        setIsLoggedIn(false); // Not logged in
+        setIsLoggedIn(false);
         setUserHasRated(false);
       }
     } catch (error) {
       console.error("Error checking user book rating:", error.message);
       setError("Error checking user book rating.");
+    }
+  };
+
+  // Check if the user has commented on the book
+  const checkUserComment = async () => {
+    try {
+      const hasCommented = await hasUserCommentedOnBook(id);
+      setUserHasCommented(hasCommented);
+    } catch (error) {
+      console.error("Error checking user book comments:", error.message);
+      setUserHasCommented(false);
     }
   };
 
@@ -117,7 +124,7 @@ const BookDetails = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setComments((prevComments) => [...prevComments, response.data.comment]);
-      setUserHasCommented(true); // Update state to reflect that user has commented
+      setUserHasCommented(true);
     } catch (error) {
       console.error("Error adding comment:", error.message);
     }
@@ -207,6 +214,7 @@ const BookDetails = () => {
       await fetchAverageRating();
       await checkOwnership();
       await checkUserRating();
+      await checkUserComment();
       setLoading(false);
     };
 
@@ -256,31 +264,35 @@ const BookDetails = () => {
             onRemoveComment={handleRemoveComment}
           />
         ))}
-        {userHasBook &&
-          !userHasCommented && ( // Conditional rendering
-            <>
-              <h3>Leave a Comment</h3>
-              <Comment onAddComment={handleAddComment} />
-            </>
-          )}
-        {!userHasBook && (
-          <p>You must be registered and have the book to add comments.</p>
+        {userHasBook && !userHasCommented && (
+          <>
+            <h3>Leave a Comment</h3>
+            <textarea id="newComment" rows="4" cols="50" />
+            <button
+              onClick={() => {
+                const commentText = document.getElementById("newComment").value;
+                handleAddComment(commentText);
+              }}
+            >
+              Add Comment
+            </button>
+          </>
         )}
       </div>
-      {userHasBook && (
-        <div>
-          <h3>Rate this Book</h3>
-          {isLoggedIn ? (
-            userHasRated ? (
-              <p>You have already rated this book.</p>
-            ) : (
+      <div>
+        <h3>Rating</h3>
+        {userHasRated ? (
+          <p>You have already rated this book.</p>
+        ) : (
+          <>
+            {isLoggedIn && userHasBook ? (
               <Rating onAddRating={handleAddRating} />
-            )
-          ) : (
-            <p>You must be registered to rate this book.</p>
-          )}
-        </div>
-      )}
+            ) : (
+              "sorry you must log in and buy the book"
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
