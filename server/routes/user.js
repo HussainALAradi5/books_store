@@ -20,7 +20,7 @@ router.put("/requests/:id/reject", authorizeAdmin, userCtrl.rejectRequest);
 // User profile and management
 router.get("/profile", userCtrl.viewUserData);
 router.put("/edit", userCtrl.edit);
-router.delete("/:id", authorizeAdmin, userCtrl.delete);
+router.delete("/delete", userCtrl.delete);
 router.get("/books", userCtrl.viewBooks);
 
 // Route to fetch user receipts

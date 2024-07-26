@@ -11,7 +11,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
-  const [bookDetails, setBookDetails] = useState(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -35,6 +34,7 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userDetails = response.data;
+
         setUser(userDetails);
         setIsAdmin(userDetails.admin);
         setFormData({
@@ -54,8 +54,8 @@ const Profile = () => {
     fetchUserDetails();
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -95,8 +95,8 @@ const Profile = () => {
     }
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
     updateUserDetails();
   };
 
@@ -108,9 +108,13 @@ const Profile = () => {
         return;
       }
 
-      await axios.delete(`${API_URL}/user/${user._id}`, {
+      await axios.delete(`${API_URL}/user/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        data: {
+          email: user.email,
         },
       });
 

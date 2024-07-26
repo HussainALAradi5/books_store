@@ -76,22 +76,21 @@ const edit = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const { id } = req.params;
+  const { email } = req.body; // Extract email from the request body
   try {
-    const deletedUser = await User.findByIdAndUpdate(
-      id,
-      { isActive: false },
-      { new: true }
-    );
+    // Find the user by email
+    const user = await User.findOne({ email });
 
-    if (!deletedUser) {
+    if (!user) {
       return res.status(404).send("User not found.");
     }
+    // Deactivate the user by updating the isActive field
+    await User.findByIdAndUpdate(user._id, { isActive: false });
 
-    res.status(200).send("User deleted successfully.");
+    res.status(200).send("User deactivated successfully.");
   } catch (error) {
-    console.error("Error deleting user:", error.message);
-    res.status(400).send("Error deleting user.");
+    console.error("Error deactivating user:", error.message);
+    res.status(400).send("Error deactivating user.");
   }
 };
 const viewUserData = async (req, res) => {
