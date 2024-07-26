@@ -94,7 +94,19 @@ const getUserDetails = async () => {
     throw new Error("Error fetching user details.");
   }
 };
-
+const checkUserCommentByEmail = async (bookId, email) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}books/${bookId}/check-user-comment-by-email`,
+      { email },
+      { headers: getAuthHeaders() }
+    );
+    return response.data.hasCommented;
+  } catch (error) {
+    console.error("Error checking user comment by email:", error.message);
+    throw new Error("Error checking user comment by email.");
+  }
+};
 // Checks if the user has rated a specific book
 const hasUserRatedBook = async (bookId) => {
   try {
@@ -184,4 +196,5 @@ export {
   getAuthHeaders,
   hasUserRatedBook,
   hasUserCommentedOnBook,
+  checkUserCommentByEmail,
 };

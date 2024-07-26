@@ -8,6 +8,7 @@ import {
   checkUserOwnsBook,
   getToken,
   hasUserCommentedOnBook,
+  checkUserCommentByEmail,
 } from "../services/auth";
 
 const API_URL = "http://localhost:3000";
@@ -278,6 +279,7 @@ const BookDetails = () => {
             </button>
           </>
         )}
+        {userHasCommented && <p>you have already comment!</p>}
       </div>
       <div>
         <h3>Rating</h3>

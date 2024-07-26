@@ -19,6 +19,7 @@ router.use(authenticate);
 router.get("/:id/user-rating", ratingCtrl.checkUserRating);
 router.get("/:id/user-comment", commentCtrl.checkUserComment); // New route for checking user comment
 router.get("/findByName", bookCtrl.findBookByName);
+router.post("/:id/check-user-comment", commentCtrl.checkUserCommentByEmail);
 
 router.post("/:id/ratings", ratingCtrl.rateThisBook);
 router.post("/:id/comments", commentCtrl.addComment);

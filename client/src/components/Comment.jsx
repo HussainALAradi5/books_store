@@ -7,6 +7,8 @@ const Comment = ({
   onEditComment,
   onRemoveComment,
   onAddComment,
+  currentUserId,
+  commentUserId,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [commentText, setCommentText] = useState(text || "");
@@ -36,6 +38,8 @@ const Comment = ({
     setNewCommentText("");
   };
 
+  const isOwner = currentUserId === commentUserId;
+
   return (
     <div className="comment">
       {isEditing ? (
@@ -50,7 +54,7 @@ const Comment = ({
       ) : (
         <>
           <p>{text}</p>
-          {canEdit && (
+          {canEdit && isOwner && (
             <>
               <button onClick={handleEditClick}>Edit</button>
               <button onClick={handleRemoveClick}>Remove</button>

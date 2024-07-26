@@ -142,10 +142,40 @@ const checkUserComment = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const checkUserCommentByEmail = async (req, res) => {
+  const { id: bookId } = req.params; // Book ID from params
+  const { email } = req.body; // User email from request body
+
+  // Validate input
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    // Retrieve user details from the database
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userId = user._id; // Extract user ID from user details
+
+    // Check if the user has commented on the book
+    const comments = await Comment.find({ bookId, userId });
+    const hasCommented = comments.length > 0;
+
+    return res.json({ hasCommented });
+  } catch (error) {
+    console.error("Error checking user comment:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 module.exports = {
   addComment,
   editComment,
   removeComment,
   getCommentsByBookId,
   checkUserComment,
+  checkUserCommentByEmail,
 };
