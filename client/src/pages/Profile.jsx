@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getToken, getUserDetails } from "../services/auth";
+import { getUserDetails } from "../services/auth";
 import AdminPanel from "../components/AdminPanel";
 import RequestAdmin from "../components/RequestAdmin";
 
@@ -23,18 +23,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const token = getToken();
-        if (!token) {
-          setError("You must be logged in to view your profile.");
-          setLoading(false);
-          return;
-        }
-
-        const response = await axios.get(`${API_URL}/user/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const userDetails = response.data;
-
+        const userDetails = await getUserDetails();
         setUser(userDetails);
         setIsAdmin(userDetails.admin);
         setFormData({
@@ -44,8 +33,7 @@ const Profile = () => {
           newEmail: userDetails.email,
         });
       } catch (error) {
-        console.error("Error fetching user details:", error.message);
-        setError("Error fetching user details.");
+        setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -164,56 +152,60 @@ const Profile = () => {
               </p>
             </div>
 
-            {!isAdmin && <RequestAdmin />}
-            {isAdmin && <AdminPanel setBookDetails={handleSetBookDetails} />}
+            {user.isActive && (
+              <>
+                {!isAdmin && <RequestAdmin />}
+                {isAdmin && (
+                  <AdminPanel setBookDetails={handleSetBookDetails} />
+                )}
+                <form onSubmit={handleFormSubmit} className="update-form">
+                  <h2>Update Your Details</h2>
+                  <div className="form-group">
+                    <label htmlFor="username">Username</label>
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="email">New Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="newEmail"
+                      value={formData.newEmail}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  {formError && <p className="error-message">{formError}</p>}
+                  <button type="submit">Update Details</button>
+                </form>
 
-            <form onSubmit={handleFormSubmit} className="update-form">
-              <h2>Update Your Details</h2>
-              <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">New Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="newEmail"
-                  value={formData.newEmail}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              {formError && <p className="error-message">{formError}</p>}
-              <button type="submit">Update</button>
-            </form>
-
-            {deleteError && <p className="error-message">{deleteError}</p>}
-            <button onClick={handleDelete} className="delete-button">
-              Delete Account
-            </button>
+                <button className="delete-account" onClick={handleDelete}>
+                  Delete Account
+                </button>
+                {deleteError && <p className="error-message">{deleteError}</p>}
+              </>
+            )}
           </div>
         </div>
       ) : (
-        <p>No user information available.</p>
+        <p>User details not available.</p>
       )}
     </div>
   );
