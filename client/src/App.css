@@ -35,14 +35,14 @@ button {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px black;
   background-color: #fff;
   transition: transform 1.5s, box-shadow 1.5s;
 }
 
 .bookCard:hover {
   transform: translateY(-10px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 1rem 1rem 1rem black;
 }
 
 .bookCardImage {
