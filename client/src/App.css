@@ -9,7 +9,68 @@ button {
   border-radius: 4px;
   padding: 10px 15px;
 }
+.homePage {
+  padding: 20px;
+}
 
+.bookGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style-type: none;
+  padding: 0;
+}
+
+.bookLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  flex: 1 1 calc(25% - 20px);
+  box-sizing: border-box;
+}
+
+.bookCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  transition: transform 1.5s, box-shadow 1.5s;
+}
+
+.bookCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.bookCardImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
+}
+
+.bookCardContent {
+  padding: 16px;
+}
+
+.bookCardTitle {
+  font-size: 1.2em;
+  margin: 0;
+  color: #333;
+}
+
+.bookCardDescription {
+  color: #555;
+  margin: 8px 0;
+}
+
+.bookCardPrice {
+  font-weight: bold;
+  color: #000;
+}
 .auth-container {
   max-width: 400px;
   margin: 0 auto;
