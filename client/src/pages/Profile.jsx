@@ -1,3 +1,4 @@
+// Profile.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { getUserDetails } from "../services/auth";
@@ -123,6 +124,12 @@ const Profile = () => {
     ) {
       deleteUserAccount();
     }
+  };
+
+  // Define handleSetBookDetails function
+  const handleSetBookDetails = (details) => {
+    console.log("Book details set:", details);
+    // Perform additional logic if needed
   };
 
   if (loading) return <div className="loading">Loading...</div>;
