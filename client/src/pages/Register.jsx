@@ -12,7 +12,7 @@ const Register = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await register(username, email, password);
+      await register(username, email.toLowerCase(), password);
       setMessage("Registration successful! Redirecting...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {

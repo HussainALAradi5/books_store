@@ -12,7 +12,7 @@ const Login = ({ setAuthenticated }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await login(email, password);
+      await login(email.toLowerCase(), password);
       setMessage("Login successful! Redirecting...");
       setAuthenticated(true);
       setTimeout(() => navigate("/profile"), 2000);
